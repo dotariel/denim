@@ -9,9 +9,7 @@ PLATFORMS=darwin linux windows
 ARCHITECTURES=386 amd64
 LDFLAGS=-ldflags "-X main.Version=${VERSION} -X main.Build=${BUILD}"
 
-default: test
-
-all: clean dist install
+default: dep test
 
 build:
 	go build ${LDFLAGS} -o ${OUTPUT_DIR}/${BINARY}
@@ -19,6 +17,9 @@ build:
 dist:
 	$(foreach GOOS, $(PLATFORMS),\
 	$(foreach GOARCH, $(ARCHITECTURES), $(shell export GOOS=$(GOOS); export GOARCH=$(GOARCH); go build -v -o ${DIST_DIR}/$(BINARY)-$(GOOS)-$(GOARCH))))
+
+dep:
+	go get -v
 
 install:
 	go install ${LDFLAGS}
