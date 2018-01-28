@@ -1,6 +1,8 @@
 package bluejeans
 
-import "testing"
+import (
+	"testing"
+)
 
 var meeting = New("12345")
 

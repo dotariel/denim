@@ -12,7 +12,7 @@ const (
 	ContextVersion = "1.0.0"
 )
 
-// Meeting encapsulates the model that is required to construct a bjn:// URL for a meeting
+// Meeting encapsulates the model that is required to construct a BlueJeans URL for a meeting
 type Meeting struct {
 	ContextVersion string `json:"ctxver"`
 	MeetingAPI     string `json:"meeting_api"`
