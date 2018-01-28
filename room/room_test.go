@@ -118,10 +118,6 @@ func TestFind(t *testing.T) {
 
 }
 
-func TestList(t *testing.T) {
-
-}
-
 func setup() TmpDirectory {
 	t, err := ioutil.TempDir("", "denim-test")
 	if err != nil {
