@@ -4,8 +4,11 @@ import (
 	"github.com/dotariel/denim/cmd"
 )
 
-var version string
+var (
+	Version string = "0.0.1"
+	Build   string = "0"
+)
 
 func main() {
-	cmd.New(version).Execute()
+	cmd.New(Version, Build).Execute()
 }

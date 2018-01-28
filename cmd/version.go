@@ -7,12 +7,12 @@ import (
 )
 
 // Version returns a command to display version information
-func Version(version string) *cobra.Command {
+func Version(version, build string) *cobra.Command {
 	return &cobra.Command{
 		Use:   "version",
 		Short: "display version information",
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println(version)
+			fmt.Printf("Denim v%s-%s\n", version, build)
 			return
 		},
 	}
