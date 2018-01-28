@@ -1,7 +1,11 @@
 package main
 
-import "github.com/dotariel/denim/cmd"
+import (
+	"github.com/dotariel/denim/cmd"
+)
+
+var version string
 
 func main() {
-	cmd.Execute()
+	cmd.New(version).Execute()
 }
