@@ -1,7 +1,7 @@
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
+VERSION:=$(shell cat ${ROOT_DIR}/VERSION)
 
 BINARY=denim
-VERSION=0.0.1
 OUTPUT_DIR=gen
 DIST_DIR=${OUTPUT_DIR}/dist
 BUILD=`git rev-parse HEAD`
@@ -9,7 +9,7 @@ PLATFORMS=darwin linux windows
 ARCHITECTURES=386 amd64
 LDFLAGS=-ldflags "-X main.Version=${VERSION} -X main.Build=${BUILD}"
 
-default: build
+default: test
 
 all: clean dist install
 
@@ -27,4 +27,7 @@ clean:
 	find ${ROOT_DIR} -name '${BINARY}[-?][a-zA-Z0-9]*[-?][a-zA-Z0-9]*' -delete
 	rm -fr ${OUTPUT_DIR}
 
-.PHONY: all build dist install clean
+test:
+	go test -v ./...
+
+.PHONY: all build dist install clean test
