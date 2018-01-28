@@ -2,6 +2,8 @@
 
 A command-line helper utility for interacting with BlueJeans.
 
+[![Build Status](https://travis-ci.org/dotariel/denim.svg?branch=master)](https://travis-ci.org/dotariel/denim)
+
 ## Room Definitions
 
 Denim will look for room definition files in the following locations and order:
