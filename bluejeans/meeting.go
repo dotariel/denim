@@ -8,7 +8,6 @@ import (
 )
 
 const (
-	MeetingAPI     = "https://bluejeans.com"
 	ContextVersion = "1.0.0"
 )
 

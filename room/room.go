@@ -7,18 +7,12 @@ import (
 	"strings"
 
 	"github.com/dotariel/denim/bluejeans"
+	vcard "github.com/emersion/go-vcard"
 	log "github.com/sirupsen/logrus"
 )
 
 var loaded bool
 var rooms []Room
-
-func load() {
-	if !loaded {
-		Load()
-		loaded = true
-	}
-}
 
 func filePath() string {
 	if fileExists(os.Getenv("DENIM_ROOMS")) {
@@ -46,8 +40,8 @@ func fileExists(path string) bool {
 }
 
 type Room struct {
+	Name string
 	bluejeans.Meeting
-	Alias string
 }
 
 func Load() {
@@ -69,24 +63,46 @@ func Load() {
 		parts := strings.Fields(line)
 
 		if len(parts) == 2 {
-			rooms = append(rooms, Room{Alias: parts[0], Meeting: bluejeans.New(parts[1])})
+			rooms = append(rooms, Room{Name: parts[0], Meeting: bluejeans.New(parts[1])})
 
 		}
 	}
 }
 
-func Find(alias string) (*Room, error) {
-	load()
+func Find(name string) (*Room, error) {
 	for _, room := range rooms {
-		if strings.ToLower(room.Alias) == strings.ToLower(alias) {
+		if strings.ToLower(room.Name) == strings.ToLower(name) {
 			return &room, nil
 		}
 	}
 
-	return nil, fmt.Errorf("room '%v' not found", alias)
+	return nil, fmt.Errorf("room '%v' not found", name)
 }
 
 func All() []Room {
-	load()
 	return rooms
+}
+
+func Export(path string, prefix string) (*os.File, error) {
+	f, err := os.Create(path)
+	if err != nil {
+		return nil, err
+	}
+
+	enc := vcard.NewEncoder(f)
+
+	for _, room := range rooms {
+		c := vcard.Card{}
+
+		c.SetValue(vcard.FieldName, prefix+room.Name)
+		c.SetValue(vcard.FieldTelephone, fmt.Sprintf("%s,,%s##", bluejeans.PhoneUSA, room.MeetingID))
+		vcard.ToV4(c)
+
+		err := enc.Encode(c)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return f, nil
 }

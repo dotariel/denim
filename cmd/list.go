@@ -15,7 +15,7 @@ func List() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Println("Rooms:")
 			for _, room := range room.All() {
-				fmt.Printf("%6s (%6s)\n", room.Alias, room.MeetingID)
+				fmt.Printf("%6s (%6s)\n", room.Name, room.MeetingID)
 			}
 		},
 	}

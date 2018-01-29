@@ -15,6 +15,7 @@ func New(version, build string) *cobra.Command {
 	root.AddCommand(Version(version, build))
 	root.AddCommand(List())
 	root.AddCommand(Open())
+	root.AddCommand(Export())
 
 	return root
 }

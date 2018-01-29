@@ -4,15 +4,17 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"reflect"
 	"testing"
 
 	"github.com/dotariel/denim/bluejeans"
+	vcard "github.com/emersion/go-vcard"
 )
 
-type TmpDirectory struct {
-	Root     string
-	UserHome string
-	AppHome  string
+var wd string
+
+func init() {
+	wd, _ = os.Getwd()
 }
 
 func TestFilePath(t *testing.T) {
@@ -89,8 +91,8 @@ func TestLoad(t *testing.T) {
 
 func TestFind(t *testing.T) {
 	rooms = []Room{
-		Room{Meeting: bluejeans.New("12345"), Alias: "foo"},
-		Room{Meeting: bluejeans.New("67890"), Alias: "bar"},
+		Room{Meeting: bluejeans.New("12345"), Name: "foo"},
+		Room{Meeting: bluejeans.New("67890"), Name: "bar"},
 	}
 
 	testCases := []struct {
@@ -115,7 +117,73 @@ func TestFind(t *testing.T) {
 			t.Errorf("failed expectation; wanted: %v, but got: %v", tt.expected, actual)
 		}
 	}
+}
 
+func TestExport(t *testing.T) {
+	tmpDir := setup()
+
+	testCases := []struct {
+		description string
+		input       []Room
+		prefix      string
+		expected    string
+	}{
+		{
+			description: "single entry without prefix",
+			input: []Room{
+				Room{Meeting: bluejeans.New("12345"), Name: "foo_1"},
+			},
+			prefix:   "",
+			expected: wd + "/fixtures/single-noprefix.vcf",
+		},
+		{
+			description: "single entry with prefix",
+			input: []Room{
+				Room{Meeting: bluejeans.New("12345"), Name: "foo_1"},
+			},
+			prefix:   "foo-",
+			expected: wd + "/fixtures/single-prefix.vcf",
+		},
+		{
+			description: "multiple entries",
+			input: []Room{
+				Room{Meeting: bluejeans.New("12345"), Name: "foo_1"},
+				Room{Meeting: bluejeans.New("12345"), Name: "bar_1"},
+			},
+			prefix:   "foo-",
+			expected: wd + "/fixtures/multiple.vcf",
+		},
+	}
+
+	for _, tt := range testCases {
+		rooms = tt.input
+		f, err := Export(tmpDir.Root+"/rooms.vcf", tt.prefix)
+
+		if err != nil {
+			panic(err)
+		}
+
+		expFile, _ := os.Open(tt.expected)
+		defer expFile.Close()
+
+		actFile, _ := os.Open(f.Name())
+		defer actFile.Close()
+
+		actual, _ := vcard.NewDecoder(actFile).Decode()
+		expected, _ := vcard.NewDecoder(expFile).Decode()
+
+		if !reflect.DeepEqual(actual, expected) {
+			t.Errorf("'%s' failed; wanted:%v, but got:%v", tt.description, expected, actual)
+		}
+	}
+
+	teardown(tmpDir)
+}
+
+type TmpDirectory struct {
+	Root     string
+	UserHome string
+	AppHome  string
 }
 
 func setup() TmpDirectory {

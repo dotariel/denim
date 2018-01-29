@@ -14,7 +14,7 @@ var useBrowser bool
 func Open() *cobra.Command {
 
 	cmd := &cobra.Command{
-		Use:   "open [room]",
+		Use:   "open ROOM",
 		Short: "open a room",
 		Run:   openRoom,
 		Args:  cobra.ExactArgs(1),
