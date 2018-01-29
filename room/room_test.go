@@ -1,23 +1,17 @@
 package room
 
 import (
-	"fmt"
-	"io/ioutil"
 	"os"
 	"reflect"
 	"testing"
 
 	"github.com/dotariel/denim/bluejeans"
-	vcard "github.com/emersion/go-vcard"
+	"github.com/emersion/go-vcard"
 )
 
-var wd string
+var wd, _ = os.Getwd()
 
-func init() {
-	wd, _ = os.Getwd()
-}
-
-func TestFilePath(t *testing.T) {
+func TestResolveSource(t *testing.T) {
 	tmpDir := setup()
 
 	testCases := []struct {
@@ -41,9 +35,14 @@ func TestFilePath(t *testing.T) {
 			expected:    tmpDir.AppHome + "/rooms",
 		},
 		{
-			description: "override with $DENIM_ROOMS",
+			description: "override with $DENIM_ROOMS file",
 			env:         map[string]string{"DENIM_ROOMS": tmpDir.AppHome + "/rooms", "DENIM_HOME": tmpDir.AppHome, "HOME": tmpDir.UserHome},
 			expected:    tmpDir.AppHome + "/rooms",
+		},
+		{
+			description: "override with $DENIM_ROOMS url",
+			env:         map[string]string{"DENIM_ROOMS": "http://localhost:8080/rooms", "DENIM_HOME": tmpDir.AppHome, "HOME": tmpDir.UserHome},
+			expected:    "http://localhost:8080/rooms",
 		},
 	}
 
@@ -53,7 +52,7 @@ func TestFilePath(t *testing.T) {
 			os.Setenv(k, v)
 		}
 
-		if actual := filePath(); actual != tt.expected {
+		if actual := resolveSource(); actual != tt.expected {
 			t.Errorf("'%v' failed; wanted: %v, but got: %v", tt.description, tt.expected, actual)
 		}
 	}
@@ -182,45 +181,20 @@ func TestExport(t *testing.T) {
 	teardown(tmpDir)
 }
 
-type TmpDirectory struct {
-	Root     string
-	UserHome string
-	AppHome  string
-}
-
-func setup() TmpDirectory {
-	t, err := ioutil.TempDir("", "denim-test")
-	if err != nil {
-		panic(err)
+func TestIsURL(t *testing.T) {
+	testCases := []struct {
+		input    string
+		expected bool
+	}{
+		{input: "", expected: false},
+		{input: "/foo", expected: false},
+		{input: "http://foo.co/bar", expected: true},
+		{input: "https://foo.co/bar", expected: true},
 	}
 
-	tmpDir := TmpDirectory{
-		Root:     t,
-		UserHome: t + "/HOME",
-		AppHome:  t + "/DENIM_HOME",
-	}
-
-	os.MkdirAll(tmpDir.AppHome, os.ModePerm)
-	os.MkdirAll(tmpDir.UserHome+"/.denim", os.ModePerm)
-	touch(tmpDir.UserHome + "/.denim/rooms")
-	touch(tmpDir.AppHome + "/rooms")
-	touch(tmpDir.Root + "/rooms")
-
-	return tmpDir
-}
-
-func touch(path string) *os.File {
-	if path != "" {
-		f, err := os.Create(path)
-		if err != nil {
-			fmt.Println("Could not touch file;", err)
+	for _, tt := range testCases {
+		if actual := isURL(tt.input); actual != tt.expected {
+			t.Errorf("'%v' failed; wanted:%v, but got:%v", tt.input, tt.expected, actual)
 		}
-		return f
 	}
-
-	return nil
-}
-
-func teardown(dir TmpDirectory) {
-	os.RemoveAll(dir.Root)
 }

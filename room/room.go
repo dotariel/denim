@@ -1,19 +1,21 @@
 package room
 
 import (
+	"bytes"
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"strings"
 
 	"github.com/dotariel/denim/bluejeans"
-	vcard "github.com/emersion/go-vcard"
+	"github.com/emersion/go-vcard"
 )
 
 var rooms []Room
 
-// RoomFile is the resolved room definition file.
-var RoomFile string
+// Source is the resolved room definition file.
+var Source string
 
 // Room wraps a meeting and provides a name to associate with it.
 type Room struct {
@@ -22,18 +24,18 @@ type Room struct {
 }
 
 // Load searches the following paths for a room definition file:
-//   - $DENIM_ROOMS
+//   - $DENIM_ROOMS (path to a FILE or a URL)
 //   - $HOME/.denim/rooms
 //   - $DENIM_HOME/.denim/rooms
 func Load() error {
-	RoomFile = filePath()
-	if RoomFile == "" {
-		return fmt.Errorf("could not locate room definitions")
+	Source = resolveSource()
+	if Source == "" {
+		return fmt.Errorf("could not resolve room data source")
 	}
 
-	bytes, err := ioutil.ReadFile(RoomFile)
+	bytes, err := read(Source)
 	if err != nil {
-		return fmt.Errorf("file could not be read; %s", RoomFile)
+		return err
 	}
 
 	rooms = make([]Room, 0)
@@ -48,6 +50,11 @@ func Load() error {
 	return nil
 }
 
+// All returns a list of all the rooms.
+func All() []Room {
+	return rooms
+}
+
 // Find returns a room that matches the provided name. The name is not case-sensitive.
 func Find(name string) (*Room, error) {
 	for _, room := range rooms {
@@ -57,11 +64,6 @@ func Find(name string) (*Room, error) {
 	}
 
 	return nil, fmt.Errorf("room '%v' not found", name)
-}
-
-// All returns a list of all the rooms.
-func All() []Room {
-	return rooms
 }
 
 // Export produces a VCF file containing card entries for all the rooms.
@@ -89,8 +91,8 @@ func Export(path string, prefix string) (*os.File, error) {
 	return f, nil
 }
 
-func filePath() string {
-	if fileExists(os.Getenv("DENIM_ROOMS")) {
+func resolveSource() string {
+	if fileExists(os.Getenv("DENIM_ROOMS")) || isURL(os.Getenv("DENIM_ROOMS")) {
 		return os.Getenv("DENIM_ROOMS")
 	}
 
@@ -112,4 +114,41 @@ func fileExists(path string) bool {
 	}
 
 	return false
+}
+
+func read(path string) ([]byte, error) {
+	if isURL(path) {
+		return bytesFromURL(path)
+	}
+
+	return bytesFromFile(path)
+}
+
+func isURL(path string) bool {
+	return strings.HasPrefix(path, "http://") || strings.HasPrefix(path, "https://")
+}
+
+func bytesFromFile(file string) ([]byte, error) {
+	bytes, err := ioutil.ReadFile(file)
+	if err != nil {
+		return nil, fmt.Errorf("file could not be read; %s", Source)
+	}
+
+	return bytes, nil
+}
+
+func bytesFromURL(url string) ([]byte, error) {
+	r, err := http.Get(Source)
+	if err != nil {
+		return nil, err
+	}
+	defer r.Body.Close()
+
+	if r.StatusCode != 200 {
+		return nil, fmt.Errorf("url '%s' source returned an error: %v", url, r.StatusCode)
+	}
+
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(r.Body)
+	return buf.Bytes(), nil
 }

@@ -17,7 +17,7 @@ func List() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Print("Rooms:")
 			if verbose {
-				fmt.Printf(" (using '%v')", room.RoomFile)
+				fmt.Printf(" (using '%v')", room.Source)
 			}
 			fmt.Print("\n")
 
