@@ -15,7 +15,7 @@ import (
 var rooms []Room
 
 // Source is the resolved room definition file.
-var Source string
+var source string
 
 // Room wraps a meeting and provides a name to associate with it.
 type Room struct {
@@ -28,12 +28,12 @@ type Room struct {
 //   - $HOME/.denim/rooms
 //   - $DENIM_HOME/.denim/rooms
 func Load() error {
-	Source = resolveSource()
-	if Source == "" {
+	source = resolveSource()
+	if !Loaded() {
 		return fmt.Errorf("could not resolve room data source")
 	}
 
-	bytes, err := read(Source)
+	bytes, err := read(source)
 	if err != nil {
 		return err
 	}
@@ -48,6 +48,14 @@ func Load() error {
 	}
 
 	return nil
+}
+
+func Loaded() bool {
+	return source != ""
+}
+
+func Source() string {
+	return source
 }
 
 // All returns a list of all the rooms.
@@ -131,14 +139,14 @@ func isURL(path string) bool {
 func bytesFromFile(file string) ([]byte, error) {
 	bytes, err := ioutil.ReadFile(file)
 	if err != nil {
-		return nil, fmt.Errorf("file could not be read; %s", Source)
+		return nil, fmt.Errorf("file could not be read; %s", source)
 	}
 
 	return bytes, nil
 }
 
 func bytesFromURL(url string) ([]byte, error) {
-	r, err := http.Get(Source)
+	r, err := http.Get(source)
 	if err != nil {
 		return nil, err
 	}

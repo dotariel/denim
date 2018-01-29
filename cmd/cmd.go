@@ -1,21 +1,22 @@
+// Package cmd contains commands to manage the various operations.
 package cmd
 
 import (
+	"fmt"
+
+	"github.com/dotariel/denim/room"
 	"github.com/spf13/cobra"
 )
 
-// New creates the root entrypoint command for the application.
-func New(version, build string) *cobra.Command {
-	var root *cobra.Command
+func validateSource(cmd *cobra.Command, args []string) error {
+	if !room.Loaded() {
+		var msg string
+		msg = msg + "room data could not be loaded from any of the following locations:\n"
+		msg = msg + "  - $DENIM_ROOMS\n"
+		msg = msg + "  - $HOME/.denim/rooms\n"
+		msg = msg + "  - $DENIM_HOME/rooms\n"
 
-	root = &cobra.Command{
-		Use:   "denim",
-		Short: "Denim is a command-line utility for interacting with BlueJeans",
+		return fmt.Errorf(msg)
 	}
-	root.AddCommand(Version(version, build))
-	root.AddCommand(List())
-	root.AddCommand(Open())
-	root.AddCommand(Export())
-
-	return root
+	return nil
 }

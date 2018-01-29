@@ -12,14 +12,13 @@ var useBrowser bool
 
 // Open returns a command to open a room.
 func Open() *cobra.Command {
-
 	cmd := &cobra.Command{
-		Use:   "open ROOM",
-		Short: "open a room",
-		Run:   openRoom,
-		Args:  cobra.ExactArgs(1),
+		Use:               "open ROOM",
+		Short:             "open a room",
+		PersistentPreRunE: validateSource,
+		Run:               openRoom,
+		Args:              cobra.ExactArgs(1),
 	}
-
 	cmd.Flags().BoolVarP(&useBrowser, "browser", "b", false, "open in browser")
 
 	return cmd

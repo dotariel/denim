@@ -1,11 +1,9 @@
 package main
 
 import (
-	"log"
-	"os"
-
 	"github.com/dotariel/denim/cmd"
 	"github.com/dotariel/denim/room"
+	"github.com/spf13/cobra"
 )
 
 var (
@@ -13,13 +11,21 @@ var (
 	Build   string = "0"
 )
 
+var rootCmd *cobra.Command
+
 func init() {
-	if err := room.Load(); err != nil {
-		log.Fatal(err)
-		os.Exit(1)
+	rootCmd = &cobra.Command{
+		Use:   "denim",
+		Short: "Denim is a command-line utility for interacting with BlueJeans.",
 	}
+	rootCmd.AddCommand(cmd.Version(Version, Build))
+	rootCmd.AddCommand(cmd.List())
+	rootCmd.AddCommand(cmd.Open())
+	rootCmd.AddCommand(cmd.Export())
+
+	room.Load()
 }
 
 func main() {
-	cmd.New(Version, Build).Execute()
+	rootCmd.Execute()
 }
