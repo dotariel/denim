@@ -14,36 +14,16 @@ import (
 var loaded bool
 var rooms []Room
 
-func filePath() string {
-	if fileExists(os.Getenv("DENIM_ROOMS")) {
-		return os.Getenv("DENIM_ROOMS")
-	}
-
-	if fileExists(os.Getenv("DENIM_HOME") + "/rooms") {
-		return os.Getenv("DENIM_HOME") + "/rooms"
-	}
-
-	if fileExists(os.Getenv("HOME") + "/.denim/rooms") {
-		return os.Getenv("HOME") + "/.denim/rooms"
-	}
-
-	return ""
-}
-
-func fileExists(path string) bool {
-	_, err := ioutil.ReadFile(path)
-	if err == nil {
-		return true
-	}
-
-	return false
-}
-
+// Room wraps a meeting and provides a name to associate with it.
 type Room struct {
 	Name string
 	bluejeans.Meeting
 }
 
+// Load searches the following paths for a room definition file:
+//   - $DENIM_ROOMS
+//   - $HOME/.denim/rooms
+//   - $DENIM_HOME/.denim/rooms
 func Load() {
 	f := filePath()
 	if f == "" {
@@ -69,6 +49,7 @@ func Load() {
 	}
 }
 
+// Find returns a room that matches the provided name. The name is not case-sensitive.
 func Find(name string) (*Room, error) {
 	for _, room := range rooms {
 		if strings.ToLower(room.Name) == strings.ToLower(name) {
@@ -79,10 +60,12 @@ func Find(name string) (*Room, error) {
 	return nil, fmt.Errorf("room '%v' not found", name)
 }
 
+// All returns a list of all the rooms.
 func All() []Room {
 	return rooms
 }
 
+// Export produces a VCF file containing card entries for all the rooms.
 func Export(path string, prefix string) (*os.File, error) {
 	f, err := os.Create(path)
 	if err != nil {
@@ -105,4 +88,29 @@ func Export(path string, prefix string) (*os.File, error) {
 	}
 
 	return f, nil
+}
+
+func filePath() string {
+	if fileExists(os.Getenv("DENIM_ROOMS")) {
+		return os.Getenv("DENIM_ROOMS")
+	}
+
+	if fileExists(os.Getenv("DENIM_HOME") + "/rooms") {
+		return os.Getenv("DENIM_HOME") + "/rooms"
+	}
+
+	if fileExists(os.Getenv("HOME") + "/.denim/rooms") {
+		return os.Getenv("HOME") + "/.denim/rooms"
+	}
+
+	return ""
+}
+
+func fileExists(path string) bool {
+	_, err := ioutil.ReadFile(path)
+	if err == nil {
+		return true
+	}
+
+	return false
 }

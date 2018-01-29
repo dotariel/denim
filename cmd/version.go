@@ -6,7 +6,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// Version returns a command to display version information
+// Version returns a command to display version information.
 func Version(version, build string) *cobra.Command {
 	return &cobra.Command{
 		Use:   "version",

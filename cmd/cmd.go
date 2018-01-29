@@ -4,7 +4,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// New creates a new root command entrypoint for the application
+// New creates the root entrypoint command for the application.
 func New(version, build string) *cobra.Command {
 	var root *cobra.Command
 

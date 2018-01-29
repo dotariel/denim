@@ -10,7 +10,7 @@ import (
 
 var useBrowser bool
 
-// Open returns a command to open a room
+// Open returns a command to open a room.
 func Open() *cobra.Command {
 
 	cmd := &cobra.Command{

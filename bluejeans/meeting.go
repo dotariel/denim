@@ -8,10 +8,11 @@ import (
 )
 
 const (
+	// ContextVersion is a fixed value.
 	ContextVersion = "1.0.0"
 )
 
-// Meeting encapsulates the model that is required to construct a BlueJeans URL for a meeting
+// Meeting encapsulates the model that is required to construct a BlueJeans URL for a meeting.
 type Meeting struct {
 	ContextVersion string `json:"ctxver"`
 	MeetingAPI     string `json:"meeting_api"`
@@ -20,7 +21,7 @@ type Meeting struct {
 	ReleaseChannel string `json:"release_channel"`
 }
 
-// New creates a Meeting from a given id
+// New creates a Meeting from a given id.
 func New(id string) Meeting {
 	return Meeting{
 		ContextVersion: ContextVersion,
@@ -31,12 +32,12 @@ func New(id string) Meeting {
 	}
 }
 
-// AppURL returns a URL that can be used to open a meeting using the native BlueJeans app
+// AppURL returns a URL that can be used to open a meeting using the native BlueJeans app.
 func (m Meeting) AppURL() string {
 	return fmt.Sprintf("bjn://meeting/%s?ctxver=%s", m.encode(), ContextVersion)
 }
 
-// BrowserURL returns a URL that can be used to open a meeting in a browser
+// BrowserURL returns a URL that can be used to open a meeting in a browser.
 func (m Meeting) BrowserURL() string {
 	return fmt.Sprintf("%s/%s/browser", MeetingAPI, m.MeetingID)
 }

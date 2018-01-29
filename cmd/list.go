@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// List returns a command that displays all the available rooms
+// List returns a command that displays all the available rooms.
 func List() *cobra.Command {
 	return &cobra.Command{
 		Use:   "list",
