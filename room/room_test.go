@@ -93,8 +93,8 @@ func TestLoad(t *testing.T) {
 
 func TestFind(t *testing.T) {
 	rooms = []Room{
-		Room{Meeting: bluejeans.New("12345"), Name: "foo"},
-		Room{Meeting: bluejeans.New("67890"), Name: "bar"},
+		{Meeting: bluejeans.New("12345"), Name: "foo"},
+		{Meeting: bluejeans.New("67890"), Name: "bar"},
 	}
 
 	testCases := []struct {
@@ -133,7 +133,7 @@ func TestExport(t *testing.T) {
 		{
 			description: "single entry without prefix",
 			input: []Room{
-				Room{Meeting: bluejeans.New("12345"), Name: "foo_1"},
+				{Meeting: bluejeans.New("12345"), Name: "foo_1"},
 			},
 			prefix:   "",
 			expected: wd + "/fixtures/single-noprefix.vcf",
@@ -141,7 +141,7 @@ func TestExport(t *testing.T) {
 		{
 			description: "single entry with prefix",
 			input: []Room{
-				Room{Meeting: bluejeans.New("12345"), Name: "foo_1"},
+				{Meeting: bluejeans.New("12345"), Name: "foo_1"},
 			},
 			prefix:   "foo-",
 			expected: wd + "/fixtures/single-prefix.vcf",
@@ -149,8 +149,8 @@ func TestExport(t *testing.T) {
 		{
 			description: "multiple entries",
 			input: []Room{
-				Room{Meeting: bluejeans.New("12345"), Name: "foo_1"},
-				Room{Meeting: bluejeans.New("12345"), Name: "bar_1"},
+				{Meeting: bluejeans.New("12345"), Name: "foo_1"},
+				{Meeting: bluejeans.New("12345"), Name: "bar_1"},
 			},
 			prefix:   "foo-",
 			expected: wd + "/fixtures/multiple.vcf",
