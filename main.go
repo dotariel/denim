@@ -1,6 +1,9 @@
 package main
 
 import (
+	"log"
+	"os"
+
 	"github.com/dotariel/denim/cmd"
 	"github.com/dotariel/denim/room"
 )
@@ -11,7 +14,10 @@ var (
 )
 
 func init() {
-	room.Load()
+	if err := room.Load(); err != nil {
+		log.Fatal(err)
+		os.Exit(1)
+	}
 }
 
 func main() {

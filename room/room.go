@@ -3,12 +3,12 @@ package room
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"strings"
 
 	"github.com/dotariel/denim/bluejeans"
 	vcard "github.com/emersion/go-vcard"
-	log "github.com/sirupsen/logrus"
 )
 
 var loaded bool
@@ -24,29 +24,29 @@ type Room struct {
 //   - $DENIM_ROOMS
 //   - $HOME/.denim/rooms
 //   - $DENIM_HOME/.denim/rooms
-func Load() {
+func Load() error {
 	f := filePath()
 	if f == "" {
-		log.Warnf("could not locate a file to load")
-		return
+		return fmt.Errorf("could not locate room definitions")
 	}
 
 	bytes, err := ioutil.ReadFile(f)
 	if err != nil {
-		log.Warnf("file could not be read; %s", f)
-		return
+		return fmt.Errorf("file could not be read; %s", f)
 	}
 
-	rooms = make([]Room, 0)
+	log.Printf("using '%v'", f)
 
+	rooms = make([]Room, 0)
 	for _, line := range strings.Split(string(bytes), "\n") {
 		parts := strings.Fields(line)
 
-		if len(parts) == 2 {
+		if len(parts) > 1 {
 			rooms = append(rooms, Room{Name: parts[0], Meeting: bluejeans.New(parts[1])})
-
 		}
 	}
+
+	return nil
 }
 
 // Find returns a room that matches the provided name. The name is not case-sensitive.

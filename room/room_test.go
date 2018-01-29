@@ -69,7 +69,9 @@ func TestLoad(t *testing.T) {
 		input       string
 		expected    int
 	}{
+		{description: "bad file", input: "FOO\r\nBAR\r\n", expected: 0},
 		{description: "single", input: "ABC 12345\n", expected: 1},
+		{description: "extra columns", input: "MORE THAN TWO COLUMNS\n", expected: 1},
 		{description: "multiple", input: "ABC 12345\nXYZ 9823", expected: 2},
 		{description: "empty lines", input: "\nABC 12345\n\nXYZ 9823", expected: 2},
 	}
