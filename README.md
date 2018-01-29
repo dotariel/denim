@@ -14,7 +14,7 @@ Denim will look for room definition files in the following locations and order:
 
 ### File Structure
 
-The room definition file should contain one room/alias definition per new-line as follows:
+The room definition file should contain one room definition per line as follows:
 
 ```
 NAME  MEETING_ID
@@ -26,7 +26,7 @@ For example:
 MY_AWESOME_ROOM   123445578
 ```
 
-**NOTE**: The aliases are not case-sensitive.
+**NOTE**: Room names are not case-sensitive.
 
 ## Build
 
