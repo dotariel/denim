@@ -31,3 +31,22 @@ MY_AWESOME_ROOM   123445578
 ## Usage
 
 Denim supports multiple commands. Use `denim -h` to display the usage.
+
+```
+Denim is a command-line utility for interacting with BlueJeans
+
+Usage:
+  denim [command]
+
+Available Commands:
+  export      export rooms to VCF (Variant Call Format)
+  help        Help about any command
+  list        list available channels
+  open        open a room
+  version     display version information
+
+Flags:
+  -h, --help   help for denim
+
+Use "denim [command] --help" for more information about a command.
+```
