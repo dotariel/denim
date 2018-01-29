@@ -16,7 +16,7 @@ build:
 
 dist:
 	$(foreach GOOS, $(PLATFORMS),\
-	$(foreach GOARCH, $(ARCHITECTURES), $(shell export GOOS=$(GOOS); export GOARCH=$(GOARCH); go build -v -o ${DIST_DIR}/$(BINARY)-$(GOOS)-$(GOARCH))))
+	$(foreach GOARCH, $(ARCHITECTURES), $(shell export GOOS=$(GOOS); export GOARCH=$(GOARCH); go build -v ${LDFLAGS} -o ${DIST_DIR}/$(GOOS)/$(GOARCH)/$(BINARY))))
 
 dep:
 	go get -v
