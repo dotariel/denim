@@ -28,6 +28,16 @@ MY_AWESOME_ROOM   123445578
 
 **NOTE**: The aliases are not case-sensitive.
 
+## Build
+
+To build and run denim locally:
+
+```
+$ go get github.com/dotariel/denim
+$ cd $GOPATH/src/dotariel/denim
+$ make install
+```
+
 ## Usage
 
 Denim supports multiple commands. Use `denim -h` to display the usage.
