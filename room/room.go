@@ -3,7 +3,6 @@ package room
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"strings"
 
@@ -11,8 +10,10 @@ import (
 	vcard "github.com/emersion/go-vcard"
 )
 
-var loaded bool
 var rooms []Room
+
+// RoomFile is the resolved room definition file.
+var RoomFile string
 
 // Room wraps a meeting and provides a name to associate with it.
 type Room struct {
@@ -25,17 +26,15 @@ type Room struct {
 //   - $HOME/.denim/rooms
 //   - $DENIM_HOME/.denim/rooms
 func Load() error {
-	f := filePath()
-	if f == "" {
+	RoomFile = filePath()
+	if RoomFile == "" {
 		return fmt.Errorf("could not locate room definitions")
 	}
 
-	bytes, err := ioutil.ReadFile(f)
+	bytes, err := ioutil.ReadFile(RoomFile)
 	if err != nil {
-		return fmt.Errorf("file could not be read; %s", f)
+		return fmt.Errorf("file could not be read; %s", RoomFile)
 	}
-
-	log.Printf("using '%v'", f)
 
 	rooms = make([]Room, 0)
 	for _, line := range strings.Split(string(bytes), "\n") {
