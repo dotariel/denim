@@ -17,7 +17,7 @@ Denim will look for room definition files in the following locations and order:
 The room definition file should contain one room/alias definition per new-line as follows:
 
 ```
-ALIAS  MEETING_ID
+NAME  MEETING_ID
 ```
 
 For example:
