@@ -21,7 +21,7 @@ dist:
 dep:
 	go get -v
 
-install:
+install: dep
 	go install ${LDFLAGS}
 
 clean:
