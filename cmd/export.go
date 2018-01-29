@@ -18,7 +18,7 @@ func Export() *cobra.Command {
 		Args:              cobra.ExactArgs(1),
 		Run:               export,
 	}
-	cmd.Flags().StringVarP(&prefix, "prefix", "p", "bluejeans-", "name prefix for go card entries")
+	cmd.Flags().StringVarP(&prefix, "prefix", "p", "bluejeans-", "name prefix for card entries")
 
 	return cmd
 }
