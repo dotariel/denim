@@ -2,11 +2,11 @@ package room
 
 import (
 	"os"
-	"reflect"
 	"testing"
 
 	"github.com/dotariel/denim/bluejeans"
 	"github.com/emersion/go-vcard"
+	"github.com/stretchr/testify/assert"
 )
 
 var wd, _ = os.Getwd()
@@ -47,14 +47,11 @@ func TestResolveSource(t *testing.T) {
 	}
 
 	for _, tt := range testCases {
-
 		for k, v := range tt.env {
 			os.Setenv(k, v)
 		}
 
-		if actual := resolveSource(); actual != tt.expected {
-			t.Errorf("'%v' failed; wanted: %v, but got: %v", tt.description, tt.expected, actual)
-		}
+		assert.Equal(t, tt.expected, resolveSource())
 	}
 
 	teardown(tmpDir)
@@ -79,12 +76,8 @@ func TestLoad(t *testing.T) {
 		f := touch(tmp.Root + "/rooms") // Create a local file for use
 		os.Setenv("DENIM_ROOMS", f.Name())
 		f.WriteString(tt.input)
-
 		Load()
-
-		if actual := len(rooms); actual != tt.expected {
-			t.Errorf("'%v' failed; wanted: %v, but got: %v", tt.description, tt.expected, actual)
-		}
+		assert.Equal(t, tt.expected, len(rooms))
 	}
 
 	teardown(tmp)
@@ -110,13 +103,8 @@ func TestFind(t *testing.T) {
 	for _, tt := range testCases {
 		actual, err := Find(tt.input)
 
-		if (err != nil) != tt.error {
-			t.Errorf("expected error mismatch; wanted: %v, but got: %v", tt.error, err != nil)
-		}
-
-		if (actual != nil) != tt.expected {
-			t.Errorf("failed expectation; wanted: %v, but got: %v", tt.expected, actual)
-		}
+		assert.Equal(t, tt.error, (err != nil))
+		assert.Equal(t, tt.expected, (actual != nil))
 	}
 }
 
@@ -173,9 +161,7 @@ func TestExport(t *testing.T) {
 		actual, _ := vcard.NewDecoder(actFile).Decode()
 		expected, _ := vcard.NewDecoder(expFile).Decode()
 
-		if !reflect.DeepEqual(actual, expected) {
-			t.Errorf("'%s' failed; wanted:%v, but got:%v", tt.description, expected, actual)
-		}
+		assert.Equal(t, expected, actual)
 	}
 
 	teardown(tmpDir)
@@ -193,8 +179,6 @@ func TestIsURL(t *testing.T) {
 	}
 
 	for _, tt := range testCases {
-		if actual := isURL(tt.input); actual != tt.expected {
-			t.Errorf("'%v' failed; wanted:%v, but got:%v", tt.input, tt.expected, actual)
-		}
+		assert.Equal(t, tt.expected, isURL(tt.input))
 	}
 }
