@@ -28,7 +28,7 @@ clean:
 	find ${ROOT_DIR} -name '${BINARY}[-?][a-zA-Z0-9]*[-?][a-zA-Z0-9]*' -delete
 	rm -fr ${OUTPUT_DIR}
 
-test:
+test: dep
 	go test -v ./...
 
 .PHONY: all build dist install clean test
