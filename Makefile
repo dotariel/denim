@@ -21,6 +21,9 @@ dist:
 dep:
 	go get -v
 
+dep-test:
+	go test -i
+
 install: dep
 	go install ${LDFLAGS}
 
@@ -28,8 +31,7 @@ clean:
 	find ${ROOT_DIR} -name '${BINARY}[-?][a-zA-Z0-9]*[-?][a-zA-Z0-9]*' -delete
 	rm -fr ${OUTPUT_DIR}
 
-test: 
-  go test -i
+test: dep-test
 	go test -v ./...
 
-.PHONY: all build dist install clean test
+.PHONY: all build dist install clean test dep dep-test
