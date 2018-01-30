@@ -15,10 +15,8 @@ var rootCmd *cobra.Command
 
 func init() {
 	rootCmd = &cobra.Command{
-		Use: "denim",
-		Long: `Denim is a command-line utility for interacting with BlueJeans.
-
-For more information, see (https://github.com/dotariel/denim).`,
+		Use:  "denim",
+		Long: "Denim manages the use of persistent BlueJeans meetings as named rooms.",
 	}
 	rootCmd.AddCommand(cmd.Version(Version, Build))
 	rootCmd.AddCommand(cmd.List())
