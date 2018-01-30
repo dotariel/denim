@@ -19,6 +19,7 @@ type Meeting struct {
 	MeetingID      string `json:"meeting_id"`
 	RolePasscode   string `json:"role_passcode"`
 	ReleaseChannel string `json:"release_channel"`
+	UserFullName   string `json:"user_full_name,omitempty"`
 }
 
 // New creates a Meeting from a given id.
@@ -30,6 +31,10 @@ func New(id string) Meeting {
 		RolePasscode:   "",
 		ReleaseChannel: "live",
 	}
+}
+
+func (m *Meeting) SetUser(user string) {
+	m.UserFullName = user
 }
 
 // AppURL returns a URL that can be used to open a meeting using the native BlueJeans app.

@@ -9,6 +9,7 @@ import (
 )
 
 var useBrowser bool
+var userName string
 
 // Open returns a command to open a room.
 func Open() *cobra.Command {
@@ -19,7 +20,9 @@ func Open() *cobra.Command {
 		Run:               openRoom,
 		Args:              cobra.ExactArgs(1),
 	}
+
 	cmd.Flags().BoolVarP(&useBrowser, "browser", "b", false, "open in browser")
+	cmd.Flags().StringVarP(&userName, "user", "u", "", "participant name")
 
 	return cmd
 }
@@ -31,6 +34,8 @@ func openRoom(cmd *cobra.Command, args []string) {
 		fmt.Println(err)
 		return
 	}
+
+	rm.SetUser(userName)
 
 	if useBrowser {
 		browser.OpenURL(rm.BrowserURL())

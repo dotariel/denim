@@ -43,7 +43,11 @@ func Load() error {
 		parts := strings.Fields(line)
 
 		if len(parts) > 1 {
-			rooms = append(rooms, Room{Name: parts[0], Meeting: bluejeans.New(parts[1])})
+			r := Room{
+				Name:    parts[0],
+				Meeting: bluejeans.New(parts[1]),
+			}
+			rooms = append(rooms, r)
 		}
 	}
 
