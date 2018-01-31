@@ -6,11 +6,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	Version string = "0.0.0"
-	Build   string = "0"
-)
-
 var rootCmd *cobra.Command
 
 func init() {
@@ -18,7 +13,7 @@ func init() {
 		Use:  "denim",
 		Long: "Denim manages the use of persistent BlueJeans meetings as named rooms.",
 	}
-	rootCmd.AddCommand(cmd.Version(Version, Build))
+	rootCmd.AddCommand(cmd.Version())
 	rootCmd.AddCommand(cmd.List())
 	rootCmd.AddCommand(cmd.Open())
 	rootCmd.AddCommand(cmd.Export())

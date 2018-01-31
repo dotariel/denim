@@ -5,9 +5,10 @@ BINARY=denim
 OUTPUT_DIR=gen
 DIST_DIR=${OUTPUT_DIR}/dist
 BUILD=`git rev-parse HEAD`
+BUILD_DATE:=`date -u '+%Y-%m-%d_%I:%M:%S%p'`
 PLATFORMS=darwin linux windows
 ARCHITECTURES=386 amd64
-LDFLAGS=-ldflags "-X main.Version=${VERSION} -X main.Build=${BUILD}"
+LDFLAGS=-ldflags "-X github.com/dotariel/denim/app.Version=${VERSION} -X github.com/dotariel/denim/app.Build=${BUILD} -X github.com/dotariel/denim/app.BuildDate=${BUILD_DATE}"
 
 default: dep test
 

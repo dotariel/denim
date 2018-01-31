@@ -3,16 +3,19 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/dotariel/denim/app"
 	"github.com/spf13/cobra"
 )
 
 // Version returns a command to display version information.
-func Version(version, build string) *cobra.Command {
+func Version() *cobra.Command {
 	return &cobra.Command{
 		Use:   "version",
 		Short: "display version information",
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Printf("Denim v%s-%s\n", version, build)
+			fmt.Printf(" %-12s %s\n", "Version:", app.Version)
+			fmt.Printf(" %-12s %s\n", "Build:", app.Build)
+			fmt.Printf(" %-12s %s\n", "Date:", app.BuildDate)
 			return
 		},
 	}
