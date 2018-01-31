@@ -23,7 +23,7 @@ dep:
 	go get -v .
 
 install: dep
-	go install ${LDFLAGS}
+	go install -a ${LDFLAGS}
 
 clean:
 	find ${ROOT_DIR} -name '${BINARY}[-?][a-zA-Z0-9]*[-?][a-zA-Z0-9]*' -delete
