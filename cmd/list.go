@@ -30,10 +30,6 @@ func listRooms(cmd *cobra.Command, args []string) {
 	fmt.Print("\n")
 
 	for _, room := range room.All() {
-		fmt.Printf("   %-12s", room.Name)
-		if verbose {
-			fmt.Printf(" (%6s)", room.MeetingID)
-		}
-		fmt.Printf("\n")
+		fmt.Printf("  %s\n", room.Print(verbose))
 	}
 }

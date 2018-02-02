@@ -91,7 +91,7 @@ func Export(path string, prefix string) (*os.File, error) {
 		c := vcard.Card{}
 
 		c.SetValue(vcard.FieldName, prefix+room.Name)
-		c.SetValue(vcard.FieldTelephone, fmt.Sprintf("%s,,%s##", bluejeans.PhoneUSA, room.MeetingID))
+		c.SetValue(vcard.FieldTelephone, room.Phone())
 		vcard.ToV4(c)
 
 		err := enc.Encode(c)
@@ -101,6 +101,15 @@ func Export(path string, prefix string) (*os.File, error) {
 	}
 
 	return f, nil
+}
+
+// Print returns a user-friendly string describing the room.
+func (r Room) Print(verbose bool) string {
+	if verbose {
+		return fmt.Sprintf("%-15s (%s) Phone: %s", r.Name, r.MeetingID, r.Phone())
+	}
+
+	return r.Name
 }
 
 func resolveSource() string {

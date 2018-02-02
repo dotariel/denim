@@ -182,3 +182,20 @@ func TestIsURL(t *testing.T) {
 		assert.Equal(t, tt.expected, isURL(tt.input))
 	}
 }
+
+func TestPrint(t *testing.T) {
+	room := Room{"FOO", bluejeans.Meeting{MeetingID: "12345"}}
+
+	testCases := []struct {
+		input    Room
+		verbose  bool
+		expected string
+	}{
+		{input: room, verbose: false, expected: "FOO"},
+		{input: room, verbose: true, expected: "FOO             (12345) Phone: +14087407256,,12345##"},
+	}
+
+	for _, tt := range testCases {
+		assert.Equal(t, tt.expected, tt.input.Print(tt.verbose))
+	}
+}

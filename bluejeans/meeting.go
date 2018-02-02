@@ -33,6 +33,7 @@ func New(id string) Meeting {
 	}
 }
 
+// SetUser sets the meeting participant.
 func (m *Meeting) SetUser(user string) {
 	m.UserFullName = user
 }
@@ -45,6 +46,12 @@ func (m Meeting) AppURL() string {
 // BrowserURL returns a URL that can be used to open a meeting in a browser.
 func (m Meeting) BrowserURL() string {
 	return fmt.Sprintf("%s/%s/browser", MeetingAPI, m.MeetingID)
+}
+
+// Phone returns a friendly phone number string that can be used to dial in to a
+// meeting.
+func (m Meeting) Phone() string {
+	return fmt.Sprintf("%s,,%s##", PhoneUSA, m.MeetingID)
 }
 
 func (m Meeting) marshal() string {
