@@ -10,7 +10,7 @@ PLATFORMS=darwin linux windows
 ARCHITECTURES=386 amd64
 LDFLAGS=-ldflags "-X github.com/dotariel/denim/app.Version=${VERSION} -X github.com/dotariel/denim/app.Build=${BUILD} -X github.com/dotariel/denim/app.BuildDate=${BUILD_DATE}"
 
-default: dep test
+default: test
 
 build:
 	go build ${LDFLAGS} -o ${OUTPUT_DIR}/${BINARY}
