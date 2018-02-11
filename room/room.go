@@ -54,10 +54,12 @@ func Load() error {
 	return nil
 }
 
+// Loaded indicates if the room data has been loaded
 func Loaded() bool {
 	return source != ""
 }
 
+// Source returns the underlying source of room data
 func Source() string {
 	return source
 }
