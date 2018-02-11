@@ -34,7 +34,7 @@ To build and run denim locally:
 
 ```
 $ go get github.com/dotariel/denim
-$ cd $GOPATH/src/dotariel/denim
+$ cd $GOPATH/src/github.com/dotariel/denim
 $ make install
 ```
 
