@@ -10,6 +10,12 @@ import (
 const (
 	// ContextVersion is a fixed value.
 	ContextVersion = "1.0.0"
+
+	// PhoneUSA is the United States dial-in number for BlueJeans meetings.
+	PhoneUSA = "+14087407256"
+
+	// MeetingAPI is the URL to the BlueJeans meeting API.
+	MeetingAPI = "https://bluejeans.com"
 )
 
 // Meeting encapsulates the model that is required to construct a BlueJeans URL for a meeting.

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/dotariel/denim/cmd"
+	"github.com/dotariel/denim/command"
 	"github.com/dotariel/denim/room"
 	"github.com/spf13/cobra"
 )
@@ -13,10 +13,10 @@ func init() {
 		Use:  "denim",
 		Long: "Denim manages the use of persistent BlueJeans meetings as named rooms.",
 	}
-	rootCmd.AddCommand(cmd.Version())
-	rootCmd.AddCommand(cmd.List())
-	rootCmd.AddCommand(cmd.Open())
-	rootCmd.AddCommand(cmd.Export())
+	rootCmd.AddCommand(command.Version())
+	rootCmd.AddCommand(command.List())
+	rootCmd.AddCommand(command.Open())
+	rootCmd.AddCommand(command.Export())
 
 	room.Load()
 }

@@ -1,4 +1,4 @@
-package cmd
+package command
 
 import (
 	"fmt"
@@ -14,7 +14,6 @@ func Version() *cobra.Command {
 		Short: "display version information",
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Printf(" %-12s %s\n", "Version:", app.Version)
-			fmt.Printf(" %-12s %s\n", "Build:", app.Build)
 			fmt.Printf(" %-12s %s\n", "Date:", app.BuildDate)
 			return
 		},

@@ -104,7 +104,7 @@ func TestFind(t *testing.T) {
 		actual, err := Find(tt.input)
 
 		assert.Equal(t, tt.error, (err != nil))
-		assert.Equal(t, tt.expected, (actual != nil))
+		assert.Equal(t, tt.expected, (actual != Room{}))
 	}
 }
 
@@ -123,7 +123,7 @@ func TestExport(t *testing.T) {
 				{Meeting: bluejeans.New("12345"), Name: "foo_1"},
 			},
 			prefix:   "",
-			expected: wd + "/fixtures/single-noprefix.vcf",
+			expected: wd + "/testdata/single-noprefix.vcf",
 		},
 		{
 			description: "single entry with prefix",
@@ -131,7 +131,7 @@ func TestExport(t *testing.T) {
 				{Meeting: bluejeans.New("12345"), Name: "foo_1"},
 			},
 			prefix:   "foo-",
-			expected: wd + "/fixtures/single-prefix.vcf",
+			expected: wd + "/testdata/single-prefix.vcf",
 		},
 		{
 			description: "multiple entries",
@@ -140,7 +140,7 @@ func TestExport(t *testing.T) {
 				{Meeting: bluejeans.New("12345"), Name: "bar_1"},
 			},
 			prefix:   "foo-",
-			expected: wd + "/fixtures/multiple.vcf",
+			expected: wd + "/testdata/multiple.vcf",
 		},
 	}
 

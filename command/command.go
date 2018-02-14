@@ -1,5 +1,5 @@
-// Package cmd contains commands to manage the various operations.
-package cmd
+// package command contains commands to manage the various operations.
+package command
 
 import (
 	"fmt"
