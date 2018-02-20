@@ -94,6 +94,8 @@ func Export(path string, prefix string) (*os.File, error) {
 
 		c.SetValue(vcard.FieldName, prefix+room.Name)
 		c.SetValue(vcard.FieldTelephone, room.Phone())
+		c.SetValue(vcard.FieldNote, room.Notes())
+
 		vcard.ToV4(c)
 
 		err := enc.Encode(c)
@@ -116,6 +118,21 @@ func (r Room) Print(verbose bool) string {
 
 func (r Room) String() string {
 	return r.Print(false)
+}
+
+func (r Room) Notes() string {
+	template := `Use for meeting location:
+%v: %v
+OR
+%v
+
+Put in meeting body:
+This meeting is scheduled in a BlueJeans Room called %v
+App URL: %v
+Browser URL: %v
+Dial-in: %v`
+
+	return fmt.Sprintf(template, r.Name, r.BrowserURL(), r.Phone(), r.Name, r.AppURL(), r.BrowserURL(), r.Phone())
 }
 
 func resolveSource() string {
