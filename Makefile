@@ -20,17 +20,19 @@ dist:
 	$(foreach GOARCH, $(ARCHITECTURES), $(shell export GOOS=$(GOOS); export GOARCH=$(GOARCH); go build -v ${LDFLAGS} -o ${DIST_DIR}/$(GOOS)/$(GOARCH)/$(BINARY))))
 
 dep:
-	go get -v .
+	@go get -v -d ./...
+
+dep-test:
+	@go get -t ./...
 
 install: dep
-	go install -a ${LDFLAGS}
+	@go install -a ${LDFLAGS}
 
 clean:
-	find ${ROOT_DIR} -name '${BINARY}[-?][a-zA-Z0-9]*[-?][a-zA-Z0-9]*' -delete
-	rm -fr ${OUTPUT_DIR}
+	@find ${ROOT_DIR} -name '${BINARY}[-?][a-zA-Z0-9]*[-?][a-zA-Z0-9]*' -delete
+	@rm -fr ${OUTPUT_DIR}
 
-test:
-	go get -t ./...
-	go test -v ./...
+test: dep-test
+	@go test -v ./...
 
 .PHONY: all build dist install clean test dep
