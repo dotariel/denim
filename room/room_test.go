@@ -137,7 +137,7 @@ func TestExport(t *testing.T) {
 			description: "multiple entries",
 			input: []Room{
 				{Meeting: bluejeans.New("12345"), Name: "foo_1"},
-				{Meeting: bluejeans.New("12345"), Name: "bar_1"},
+				{Meeting: bluejeans.New("56789"), Name: "bar_1"},
 			},
 			prefix:   "foo-",
 			expected: wd + "/testdata/multiple.vcf",
@@ -145,6 +145,7 @@ func TestExport(t *testing.T) {
 	}
 
 	for _, tt := range testCases {
+		t.Logf("Scenario: %v", tt.description)
 		rooms = tt.input
 		f, err := Export(tmpDir.Root+"/rooms.vcf", tt.prefix)
 
@@ -158,10 +159,14 @@ func TestExport(t *testing.T) {
 		actFile, _ := os.Open(f.Name())
 		defer actFile.Close()
 
-		actual, _ := vcard.NewDecoder(actFile).Decode()
-		expected, _ := vcard.NewDecoder(expFile).Decode()
+		expDec := vcard.NewDecoder(expFile)
+		actDec := vcard.NewDecoder(actFile)
 
-		assert.Equal(t, expected, actual)
+		for expected, _ := expDec.Decode(); len(expected) > 0; expected, _ = expDec.Decode() {
+			actual, _ := actDec.Decode()
+			assert.Equal(t, expected, actual)
+		}
+
 	}
 
 	teardown(tmpDir)

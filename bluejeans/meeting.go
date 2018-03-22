@@ -54,6 +54,11 @@ func (m Meeting) BrowserURL() string {
 	return fmt.Sprintf("%s/%s/browser", MeetingAPI, m.MeetingID)
 }
 
+// MeetingURL returns a URL that can be used to open a meeting.
+func (m Meeting) MeetingURL() string {
+	return fmt.Sprintf("%s/%s", MeetingAPI, m.MeetingID)
+}
+
 // Phone returns a friendly phone number string that can be used to dial in to a
 // meeting.
 func (m Meeting) Phone() string {
