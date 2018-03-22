@@ -120,6 +120,7 @@ func (r Room) String() string {
 	return r.Print(false)
 }
 
+// Notes returns a formated notes portion of the vCard
 func (r Room) Notes() string {
 	template := `Use for meeting location:
 %v: %v
@@ -128,11 +129,10 @@ OR
 
 Put in meeting body:
 This meeting is scheduled in a BlueJeans Room called %v
-App URL: %v
-Browser URL: %v
-Dial-in: %v`
+Dial-in: %v
+Meeting URL: %v`
 
-	return fmt.Sprintf(template, r.Name, r.BrowserURL(), r.Phone(), r.Name, r.AppURL(), r.BrowserURL(), r.Phone())
+	return fmt.Sprintf(template, r.Name, r.MeetingURL(), r.Phone(), r.Name, r.Phone(), r.MeetingURL())
 }
 
 func resolveSource() string {

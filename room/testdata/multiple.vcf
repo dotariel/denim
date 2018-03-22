@@ -2,11 +2,11 @@ BEGIN:VCARD
 VERSION:4.0
 N:foo-foo_1
 TEL:+14087407256,,12345##
-NOTE:Use for meeting location:\nfoo_1: https://bluejeans.com/12345/browser\nOR\n+14087407256,,12345##\n\nPut in meeting body:\nThis meeting is scheduled in a BlueJeans Room called foo_1\nApp URL: bjn://meeting/fch66x3retjq48hu48rjwc1e60h2r8kdcnjq8ubecxfp2w3948x24u3mehr76ehf5xh6rxb5d9jp2vkk5thpyv925gh6utb5ehmpwtuzd5j24eh264t36d1n48p24wkfdhjnyw31edtp6vv4cmh3m8h25gh74tbccngq6tazcdm62vkecnp24eh2dhmqct92fm?ctxver=1.0.0\nBrowser URL: https://bluejeans.com/12345/browser\nDial-in: +14087407256,,12345##
+NOTE:Use for meeting location:\nfoo_1: https://bluejeans.com/12345\nOR\n+14087407256,,12345##\n\nPut in meeting body:\nThis meeting is scheduled in a BlueJeans Room called foo_1\nDial-in: +14087407256,,12345##\nMeeting URL: https://bluejeans.com/12345
 END:VCARD
 BEGIN:VCARD
 VERSION:4.0
 N:foo-bar_1
-TEL:+14087407256,,12345##
-NOTE:Use for meeting location:\nbar_1: https://bluejeans.com/12345/browser\nOR\n+14087407256,,12345##\n\nPut in meeting body:\nThis meeting is scheduled in a BlueJeans Room called bar_1\nApp URL: bjn://meeting/fch66x3retjq48hu48rjwc1e60h2r8kdcnjq8ubecxfp2w3948x24u3mehr76ehf5xh6rxb5d9jp2vkk5thpyv925gh6utb5ehmpwtuzd5j24eh264t36d1n48p24wkfdhjnyw31edtp6vv4cmh3m8h25gh74tbccngq6tazcdm62vkecnp24eh2dhmqct92fm?ctxver=1.0.0\nBrowser URL: https://bluejeans.com/12345/browser\nDial-in: +14087407256,,12345##
+TEL:+14087407256,,56789##
+NOTE:Use for meeting location:\nbar_1: https://bluejeans.com/56789\nOR\n+14087407256,,56789##\n\nPut in meeting body:\nThis meeting is scheduled in a BlueJeans Room called bar_1\nDial-in: +14087407256,,56789##\nMeeting URL: https://bluejeans.com/56789
 END:VCARD
