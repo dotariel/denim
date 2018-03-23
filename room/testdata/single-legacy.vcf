@@ -1,0 +1,6 @@
+BEGIN:VCARD
+VERSION:3.0
+N:foo_1
+TEL:+14087407256,,12345##
+NOTE:Use for meeting location:\nfoo_1: https://bluejeans.com/12345\nOR\n+14087407256,,12345##\n\nPut in meeting body:\nThis meeting is scheduled in a BlueJeans Room called foo_1\nDial-in: +14087407256,,12345##\nMeeting URL: https://bluejeans.com/12345
+END:VCARD

@@ -8,6 +8,7 @@ import (
 )
 
 var prefix string
+var legacy bool
 
 // Export returns a command to produce export room information to VCF.
 func Export() *cobra.Command {
@@ -18,13 +19,15 @@ func Export() *cobra.Command {
 		Args:              cobra.ExactArgs(1),
 		Run:               export,
 	}
+
 	cmd.Flags().StringVarP(&prefix, "prefix", "p", "bluejeans-", "name prefix for card entries")
+	cmd.Flags().BoolVarP(&legacy, "legacy", "l", false, "use legacy (3.0) format")
 
 	return cmd
 }
 
 func export(cmd *cobra.Command, args []string) {
-	_, err := room.Export(args[0], prefix)
+	_, err := room.Export(args[0], prefix, legacy)
 	if err != nil {
 		fmt.Printf("export failed; %v", err)
 	}

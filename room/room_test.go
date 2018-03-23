@@ -115,6 +115,7 @@ func TestExport(t *testing.T) {
 		description string
 		input       []Room
 		prefix      string
+		legacy      bool
 		expected    string
 	}{
 		{
@@ -123,7 +124,17 @@ func TestExport(t *testing.T) {
 				{Meeting: bluejeans.New("12345"), Name: "foo_1"},
 			},
 			prefix:   "",
+			legacy:   false,
 			expected: wd + "/testdata/single-noprefix.vcf",
+		},
+		{
+			description: "single entry in legacy format",
+			input: []Room{
+				{Meeting: bluejeans.New("12345"), Name: "foo_1"},
+			},
+			prefix:   "",
+			legacy:   true,
+			expected: wd + "/testdata/single-legacy.vcf",
 		},
 		{
 			description: "single entry with prefix",
@@ -131,6 +142,7 @@ func TestExport(t *testing.T) {
 				{Meeting: bluejeans.New("12345"), Name: "foo_1"},
 			},
 			prefix:   "foo-",
+			legacy:   false,
 			expected: wd + "/testdata/single-prefix.vcf",
 		},
 		{
@@ -140,6 +152,7 @@ func TestExport(t *testing.T) {
 				{Meeting: bluejeans.New("56789"), Name: "bar_1"},
 			},
 			prefix:   "foo-",
+			legacy:   false,
 			expected: wd + "/testdata/multiple.vcf",
 		},
 	}
@@ -147,7 +160,7 @@ func TestExport(t *testing.T) {
 	for _, tt := range testCases {
 		t.Logf("Scenario: %v", tt.description)
 		rooms = tt.input
-		f, err := Export(tmpDir.Root+"/rooms.vcf", tt.prefix)
+		f, err := Export(tmpDir.Root+"/rooms.vcf", tt.prefix, tt.legacy)
 
 		if err != nil {
 			panic(err)

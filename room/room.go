@@ -81,7 +81,7 @@ func Find(name string) (Room, error) {
 }
 
 // Export produces a VCF file containing card entries for all the rooms.
-func Export(path string, prefix string) (*os.File, error) {
+func Export(path string, prefix string, legacy bool) (*os.File, error) {
 	f, err := os.Create(path)
 	if err != nil {
 		return nil, err
@@ -95,8 +95,12 @@ func Export(path string, prefix string) (*os.File, error) {
 		c.SetValue(vcard.FieldName, prefix+room.Name)
 		c.SetValue(vcard.FieldTelephone, room.Phone())
 		c.SetValue(vcard.FieldNote, room.Notes())
+		c.SetValue(vcard.FieldVersion, "3.0")
 
-		vcard.ToV4(c)
+		if !legacy {
+			c.SetValue(vcard.FieldVersion, "4.0")
+			vcard.ToV4(c)
+		}
 
 		err := enc.Encode(c)
 		if err != nil {
