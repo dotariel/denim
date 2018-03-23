@@ -44,7 +44,7 @@ $ make install
 Denim supports multiple commands. Use `denim -h` to display the usage.
 
 ```
-Denim is a command-line utility for interacting with BlueJeans
+Denim manages the use of persistent BlueJeans meetings as named rooms.
 
 Usage:
   denim [command]
