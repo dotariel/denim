@@ -8,7 +8,7 @@ PROJECT_VERSION:=$(shell cat ${PROJECT_DIR}/VERSION | tr -d '\n')
 PROJECT_COMMIT:=$(shell git -C ${PROJECT_DIR} rev-parse --short HEAD)
 PROJECT_BUILD_VERSION:=${PROJECT_VERSION}.${PROJECT_COMMIT}
 PROJECT_BUILD_DATE="$(shell date -u +%FT%T.000Z)"
-LDFLAGS=-ldflags "-X github.com/dotariel/denim/app.Version=${PROJECT_BUILD_VERSION} -X github.com/dotariel/denim/app.BuildDate=${PROJECT_BUILD_DATE}"
+LDFLAGS=-ldflags=all="-X github.com/dotariel/denim/app.Version=${PROJECT_BUILD_VERSION} -X github.com/dotariel/denim/app.BuildDate=${PROJECT_BUILD_DATE}"
 
 default: test
 
