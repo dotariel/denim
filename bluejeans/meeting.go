@@ -46,7 +46,7 @@ func (m *Meeting) SetUser(user string) {
 
 // AppURL returns a URL that can be used to open a meeting using the native BlueJeans app.
 func (m Meeting) AppURL() string {
-	return fmt.Sprintf("bjn://meeting/%s?ctxver=%s", m.encode(), ContextVersion)
+	return fmt.Sprintf("bjnb://meeting/%s?ctxver=%s", m.encode(), ContextVersion)
 }
 
 // BrowserURL returns a URL that can be used to open a meeting in a browser.
