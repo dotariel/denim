@@ -1,6 +1,6 @@
 PROJECT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 BINARY=denim
-OUTPUT_DIR=gen
+OUTPUT_DIR=$(PROJECT_DIR)/gen
 DIST_DIR=${OUTPUT_DIR}/dist
 PLATFORMS=darwin linux windows
 ARCHITECTURES=386 amd64
@@ -17,7 +17,7 @@ build:
 
 dist:
 	$(foreach GOOS, $(PLATFORMS),\
-	$(foreach GOARCH, $(ARCHITECTURES), $(shell export GOOS=$(GOOS); export GOARCH=$(GOARCH); go build -v ${LDFLAGS} -o ${DIST_DIR}/$(GOOS)/$(GOARCH)/$(BINARY))))
+	$(foreach GOARCH, $(ARCHITECTURES), $(shell export GOOS=$(GOOS); export GOARCH=$(GOARCH); cd cmd && go build -v ${LDFLAGS} -o ${DIST_DIR}/$(GOOS)/$(GOARCH)/$(BINARY))))
 
 dep:
 	@go get -v -d ./...
