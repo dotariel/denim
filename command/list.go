@@ -13,7 +13,7 @@ var verbose bool
 func List() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:               "list",
-		Short:             "list available channels",
+		Short:             "list available rooms",
 		PersistentPreRunE: validateSource,
 		Run:               listRooms,
 	}

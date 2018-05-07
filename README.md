@@ -52,7 +52,7 @@ Usage:
 Available Commands:
   export      export rooms to VCF (Variant Call Format)
   help        Help about any command
-  list        list available channels
+  list        list available rooms
   open        open a room
   version     display version information
 
