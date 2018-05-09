@@ -13,7 +13,7 @@ LDFLAGS=-ldflags=all="-X github.com/dotariel/denim/app.Version=$(PROJECT_BUILD_V
 default: test
 
 build:
-	@cd cmd && go build -o $(OUTPUT_DIR)/$(BINARY) $(LDFLAGS)
+	@cd cmd && go build -a -o $(OUTPUT_DIR)/$(BINARY) $(LDFLAGS)
 
 dist:
 	$(foreach GOOS, $(PLATFORMS),\
@@ -26,7 +26,7 @@ dep-test:
 	@go get -t ./...
 
 install: dep
-	@cd cmd && go build -o $(GOPATH)/bin/$(BINARY) $(LDFLAGS)
+	@cd cmd && go build -a -o $(GOPATH)/bin/$(BINARY) $(LDFLAGS)
 
 clean:
 	@find $(PROJECT_DIR) -name '$(BINARY)[-?][a-zA-Z0-9]*[-?][a-zA-Z0-9]*' -delete
