@@ -12,4 +12,5 @@ deploy:
     - gen/dist/windows/386/denim
     - gen/dist/windows/amd64/denim
   on:
+    repo: dotariel/denim
     tags: true

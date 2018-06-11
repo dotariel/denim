@@ -15,7 +15,7 @@ default: dist
 build:
 	@cd cmd && go build -a -o $(OUTPUT_DIR)/$(BINARY) $(LDFLAGS)
 
-dist:
+dist: dep
 	$(foreach GOOS, $(PLATFORMS),\
 	$(foreach GOARCH, $(ARCHITECTURES), $(shell export GOOS=$(GOOS); export GOARCH=$(GOARCH); cd cmd && go build -v $(LDFLAGS) -o $(DIST_DIR)/$(GOOS)/$(GOARCH)/$(BINARY))))
 
