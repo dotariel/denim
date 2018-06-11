@@ -2,8 +2,6 @@ PROJECT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 BINARY=denim
 OUTPUT_DIR=$(PROJECT_DIR)/gen
 DIST_DIR=$(OUTPUT_DIR)/dist
-PLATFORMS=darwin linux windows
-ARCHITECTURES=386 amd64
 PROJECT_VERSION:=$(shell cat $(PROJECT_DIR)/VERSION | tr -d '\n')
 PROJECT_COMMIT:=$(shell git -C $(PROJECT_DIR) rev-parse --short HEAD)
 PROJECT_BUILD_VERSION:=$(PROJECT_VERSION).$(PROJECT_COMMIT)
@@ -15,9 +13,16 @@ default: dist
 build:
 	@cd cmd && go build -a -o $(OUTPUT_DIR)/$(BINARY) $(LDFLAGS)
 
-dist: dep
-	$(foreach GOOS, $(PLATFORMS),\
-	$(foreach GOARCH, $(ARCHITECTURES), $(shell export GOOS=$(GOOS); export GOARCH=$(GOARCH); cd cmd && go build -v $(LDFLAGS) -o $(DIST_DIR)/$(GOOS)/$(GOARCH)/$(BINARY))))
+dist: dep dist-linux dist-windows dist-darwin
+
+dist-linux:
+	@cd cmd && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o $(DIST_DIR)/linux/$(BINARY)
+
+dist-windows:
+	@cd cmd && CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o $(DIST_DIR)/windows/$(BINARY)
+
+dist-darwin:
+	@cd cmd && CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o $(DIST_DIR)/darwin/$(BINARY)
 
 dep:
 	@go get -v -d ./...
