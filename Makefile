@@ -10,7 +10,7 @@ PROJECT_BUILD_VERSION:=$(PROJECT_VERSION).$(PROJECT_COMMIT)
 PROJECT_BUILD_DATE="$(shell date -u +%FT%T.000Z)"
 LDFLAGS=-ldflags=all="-X github.com/dotariel/denim/app.Version=$(PROJECT_BUILD_VERSION) -X github.com/dotariel/denim/app.BuildDate=$(PROJECT_BUILD_DATE)"
 
-default: test
+default: dist
 
 build:
 	@cd cmd && go build -a -o $(OUTPUT_DIR)/$(BINARY) $(LDFLAGS)
