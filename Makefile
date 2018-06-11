@@ -35,4 +35,4 @@ clean:
 test: dep-test
 	@go test -v ./...
 
-.PHONY: all build dist install clean test dep
+.PHONY: all
