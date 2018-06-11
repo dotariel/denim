@@ -16,7 +16,7 @@ default: dist
 build:
 	@cd cmd && go build -a -o $(OUTPUT_DIR)/$(BINARY) $(LDFLAGS)
 
-dist: dist-linux dist-darwin dist-windows
+dist: test dist-linux dist-darwin dist-windows
 
 dist-linux:
 	@cd cmd && $(LINUX_ARGS) go get -u -d ./... && CGO_ENABLED=0 $(LINUX_ARGS) go build -o $(DIST_DIR)/linux/$(BINARY)
