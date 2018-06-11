@@ -1,1 +1,14 @@
 language: go
+deploy:
+  provider: releases
+  api_key:
+    secure: OEC2KLUZS5pFzaPoYTozrEAEO4CuNPc+wJOOOfzK2kx2U1AlI1P7N11Rj3tl+cLrpb49w6sb3blXlRhR/dt3pnTfXqqYVgnAxxNZP0CkiJO1OediKOje7UILLMDKmk/5HZUaC8RbUeVh1GgHR1KZJwFnE+t2t8xDZwg3nik8l07l6wsdufnAQ6vETafGzMArRLNPClPUPysDHcj7Kltidl3hkdLBJCG1keiXBPw/4eFh9Y4jqHL4VZgWeY6a92QSPfN+5tChCr9Dyx0d6pU6bg154Cb4l7KsezotmeGwulif8MsY0Pq1lThPCao/7ygDoDj7Th8zdm9LdVmiXXfKOTXRFlUmc75N9KKs6Nrku+MAtPPVlIEmtyeP6KzP6nLRrjqNC4o+pOXomee399V1r/sM+5ZuIcJtJs2CAvx0X6faFUb7br3k4Cl/SorjDqygStF/CAPCMCguhmmJ+hmuZq8fvA5ljIfKc5SO2b21AUxnjdvfzvPHmYpeeWFuc4uACJJkS6nB61jXE69YmNzL+YcMQU+ckZO4wCFE8owh5jjWpx6TPj9b18QB/GPhNO5wyfOui29PT1m2k6H8ZyZUO8tcXf/JXSc6v46nIdeRfN+tZQmrkAPPy4ZYsifVjBYFNHuPPFFi4Pe3OfmMvTKLpQs/Um6sGW6yck7iuD8piP4=
+  file: 
+    - gen/dist/darwin/386/denim
+    - gen/dist/darwin/amd64/denim
+    - gen/dist/linux/386/denim
+    - gen/dist/linux/amd64/denim
+    - gen/dist/windows/386/denim
+    - gen/dist/windows/amd64/denim
+  on:
+    tags: true
