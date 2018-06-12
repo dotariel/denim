@@ -7,7 +7,7 @@ deploy:
   file: 
     - gen/dist/denim_darwin_amd64
     - gen/dist/denim_linux_amd64
-    - gen/dist/denim_windows_amd64
+    - gen/dist/denim_windows_amd64.exe
   on:
     repo: dotariel/denim
     tags: true
