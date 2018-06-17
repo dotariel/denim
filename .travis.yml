@@ -1,10 +1,11 @@
 language: go
+sudo: false
 go:
-- tip
+  - tip
 before_install:
-- go get github.com/mattn/goveralls
+  - go get -d github.com/mattn/goveralls
 script:
-- $GOPATH/bin/goveralls -service=travis-ci
+  - $GOPATH/bin/goveralls -service=travis-ci
 deploy:
   provider: releases
   skip_cleanup: true
@@ -17,6 +18,3 @@ deploy:
   on:
     repo: dotariel/denim
     tags: true
-env:
-  global:
-    secure: F8UIer0ZHOM9s5Rab2Swxh05LnsF32xrciNgs39OoCFeigyNztK16fE+EgNGrJxV7hTCztRtkfBha+hcRFGDTIHPS2B9f9cqi9cIQIFOxMb4yHcSy1ILDl/kcN2KXDDVcLusqhQoKjiF/CZPfjoJRUvHM0K6gmmCjdcdRyD+3x2KBFcXUXbdxXr6vOcQ0WJdiOPAgU3O4aeTTwkX2s0CBVMwokfMqTzUp7m4qTCPqacLfDPpnARfhOKvhWpNt2quIlU1rHlD5jwf6PguUuvHGs2mdeEe8FzA3z8tgHgcLVnqQnWZP40fshbjdhCae0X0JjCcMYsnpC5yQ5VMjMjhpzvlF3Nu9JQOUL4zOBtZEYGQNBxT/ggi1d1ij7OHLbPjlEZy2Ab4z7y/2ITm6VfIyD/DP0YMeEZF/uPL47Xb7rxeAqbpfX7dxUgQeqM5QcEh3MCgBTZCfk8iPfRSfE6NpL19JY0v+OletVTIYetcQcKLx5k1QjPyE1YIIpGXZK+xe8bPv3CTXhA4QIdeby8Nbb1HeB8Jy7Wnx1DFPuRlIkx38cJwcCopbpdFFny9uAukgJp4DmFKev7Xh41ANN9q+Che9eNM6Hn+EjlinhARO4yyLQbGsBpbKofwQPs8oe5EDH55aBBy2hd5zr2nrF0VZ3PxM6Tp7eZlkIqrZ9MgH3I=
