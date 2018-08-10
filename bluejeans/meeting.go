@@ -51,7 +51,7 @@ func (m Meeting) AppURL() string {
 
 // BrowserURL returns a URL that can be used to open a meeting in a browser.
 func (m Meeting) BrowserURL() string {
-	return fmt.Sprintf("%s/%s/browser", MeetingAPI, m.MeetingID)
+	return fmt.Sprintf("%s/%s/webrtc", MeetingAPI, m.MeetingID)
 }
 
 // MeetingURL returns a URL that can be used to open a meeting.
