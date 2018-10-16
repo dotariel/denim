@@ -30,9 +30,6 @@ dist-windows:
 dep:
 	@go get -v -u -d ./...
 
-dep-test:
-	@go get -t ./...
-
 install: dep
 	@cd cmd && go build -a -o $(GOPATH)/bin/$(BINARY) $(LDFLAGS)
 
@@ -40,7 +37,7 @@ clean:
 	@find $(PROJECT_DIR) -name '$(BINARY)[-?][a-zA-Z0-9]*[-?][a-zA-Z0-9]*' -delete
 	@rm -fr $(OUTPUT_DIR)
 
-test: dep-test
+test:
 	@go test -v ./...
 
 .PHONY: all
