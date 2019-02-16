@@ -65,6 +65,8 @@ Use "denim [command] --help" for more information about a command.
 
 ## Bash Completions
 
-To integrate denim bash completions into your shell add it to your bashec
+To integrate denim bash completions into your shell, add it to your `.bashrc` file.
 
-    source denim_completions
+```
+$ source bash_completions
+```
