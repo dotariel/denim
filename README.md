@@ -62,3 +62,9 @@ Flags:
 
 Use "denim [command] --help" for more information about a command.
 ```
+
+## Bash Completions
+
+To integrate denim bash completions into your shell add it to your bashec
+
+    source denim_completions

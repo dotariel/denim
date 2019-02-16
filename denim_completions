@@ -1,0 +1,10 @@
+_denim_completion_rooms()
+{
+  if [[ -f ~/.denim/rooms ]]; then
+    room_names=`awk '{ print $1 }' ~/.denim/rooms`
+    COMPREPLY+=($(compgen -W "$room_names" -- "${COMP_WORDS[2]}"))
+  fi
+}
+
+complete -F _denim_completion_rooms denim
+
