@@ -1,11 +1,13 @@
 package room
 
 import (
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"testing"
 
 	"github.com/dotariel/denim/bluejeans"
-	"github.com/emersion/go-vcard"
+	vcard "github.com/emersion/go-vcard"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -179,7 +181,6 @@ func TestExport(t *testing.T) {
 			actual, _ := actDec.Decode()
 			assert.Equal(t, expected, actual)
 		}
-
 	}
 
 	teardown(tmpDir)
@@ -216,4 +217,33 @@ func TestPrint(t *testing.T) {
 	for _, tt := range testCases {
 		assert.Equal(t, tt.expected, tt.input.Print(tt.verbose))
 	}
+}
+
+func TestBytesFromURL(t *testing.T) {
+	handler := http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
+		res.Write([]byte("OK"))
+	})
+	server := httptest.NewServer(handler)
+	defer func() { server.Close() }()
+
+	bytes, err := read(server.URL)
+	if err != nil {
+		t.Error(err)
+	}
+
+	assert.Len(t, bytes, 2)
+}
+
+func TestSource(t *testing.T) {
+	source = "foo"
+	assert.Equal(t, Source(), source)
+}
+
+func TestAll(t *testing.T) {
+	rooms = []Room{
+		{Meeting: bluejeans.New("12345"), Name: "foo_1"},
+		{Meeting: bluejeans.New("67890"), Name: "foo_2"},
+	}
+
+	assert.Equal(t, All(), rooms)
 }

@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/dotariel/denim/bluejeans"
-	"github.com/emersion/go-vcard"
+	vcard "github.com/emersion/go-vcard"
 )
 
 var rooms []Room
@@ -186,7 +186,7 @@ func bytesFromFile(file string) ([]byte, error) {
 }
 
 func bytesFromURL(url string) ([]byte, error) {
-	r, err := http.Get(source)
+	r, err := http.Get(url)
 	if err != nil {
 		return nil, err
 	}
@@ -198,5 +198,6 @@ func bytesFromURL(url string) ([]byte, error) {
 
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(r.Body)
+
 	return buf.Bytes(), nil
 }
