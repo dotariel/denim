@@ -1,3 +1,4 @@
 .denim/
 gen/
+coverage.txt
 .DS_Store

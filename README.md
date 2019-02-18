@@ -4,6 +4,7 @@ Denim manages the use of persistent BlueJeans meetings as named rooms.
 
 [![Build Status](https://travis-ci.org/dotariel/denim.svg?branch=master)](https://travis-ci.org/dotariel/denim)
 [![Go Report Card](https://goreportcard.com/badge/github.com/dotariel/denim)](https://goreportcard.com/report/github.com/dotariel/denim)
+[![codecov](https://codecov.io/gh/dotariel/denim/branch/master/graph/badge.svg)](https://codecov.io/gh/dotariel/denim)
 
 ## Room Definitions
 

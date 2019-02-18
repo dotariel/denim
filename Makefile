@@ -41,6 +41,6 @@ clean:
 	@rm -fr $(OUTPUT_DIR)
 
 test: dep-test
-	@go test -v ./...
+	@go test -v -coverprofile=coverage.txt -covermode=atomic ./...
 
 .PHONY: all
