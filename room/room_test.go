@@ -100,6 +100,7 @@ func TestFind(t *testing.T) {
 		{input: "Foo", error: false, expected: true},
 		{input: "bar", error: false, expected: true},
 		{input: "baz", error: true, expected: false},
+		{input: "12345", error: false, expected: true},
 	}
 
 	for _, tt := range testCases {

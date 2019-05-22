@@ -69,15 +69,16 @@ func All() []Room {
 	return rooms
 }
 
-// Find returns a room that matches the provided name. The name is not case-sensitive.
-func Find(name string) (Room, error) {
+// Find returns a room that matches the provided identifier (room id or room number).
+func Find(identifier string) (Room, error) {
 	for _, room := range rooms {
-		if strings.ToLower(room.Name) == strings.ToLower(name) {
+		id := strings.ToLower(identifier)
+		if strings.ToLower(room.MeetingID) == id || strings.ToLower(room.Name) == id {
 			return room, nil
 		}
 	}
 
-	return Room{}, fmt.Errorf("room '%v' not found", name)
+	return Room{}, fmt.Errorf("room '%v' not found", identifier)
 }
 
 // Export produces a VCF file containing card entries for all the rooms.
