@@ -35,9 +35,6 @@ MY_AWESOME_ROOM   123445578
 To build and run denim locally:
 
 ```
-$ export GOPATH=[SOME GOOD PLACE TO PUT A GO RUNTIME]
-$ go get github.com/dotariel/denim
-$ cd $GOPATH/src/github.com/dotariel/denim
 $ make install
 ```
 
