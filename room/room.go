@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/dotariel/denim/bluejeans"
+	"github.com/dotariel/denim/hangouts"
 	vcard "github.com/emersion/go-vcard"
 )
 
@@ -21,6 +22,7 @@ var source string
 type Room struct {
 	Name string
 	bluejeans.Meeting
+	hangouts.Hangout
 }
 
 // Load searches the following paths for a room definition file:
@@ -46,6 +48,28 @@ func Load() error {
 			r := Room{
 				Name:    parts[0],
 				Meeting: bluejeans.New(parts[1]),
+			}
+			rooms = append(rooms, r)
+		}
+	}
+
+	source = resolveHangoutSource()
+	if !Loaded() {
+		return fmt.Errorf("could not resolve room data source")
+	}
+
+	bytes, err = read(source)
+	if err != nil {
+		return err
+	}
+
+	for _, line := range strings.Split(string(bytes), "\n") {
+		parts := strings.Fields(line)
+
+		if len(parts) > 1 {
+			r := Room{
+				Name:    parts[0],
+				Hangout: hangouts.New(parts[1]),
 			}
 			rooms = append(rooms, r)
 		}
@@ -151,6 +175,22 @@ func resolveSource() string {
 
 	if fileExists(os.Getenv("HOME") + "/.denim/rooms") {
 		return os.Getenv("HOME") + "/.denim/rooms"
+	}
+
+	return ""
+}
+
+func resolveHangoutSource() string {
+	if fileExists(os.Getenv("DENIM_ROOMS")) || isURL(os.Getenv("DENIM_ROOMS")) {
+		return os.Getenv("DENIM_ROOMS")
+	}
+
+	if fileExists(os.Getenv("DENIM_HOME") + "/hangouts") {
+		return os.Getenv("DENIM_HOME") + "/hangouts"
+	}
+
+	if fileExists(os.Getenv("HOME") + "/.denim/hangouts") {
+		return os.Getenv("HOME") + "/.denim/hangouts"
 	}
 
 	return ""
