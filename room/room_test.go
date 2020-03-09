@@ -6,6 +6,8 @@ import (
 	"os"
 	"testing"
 
+	"github.com/dotariel/denim/hangouts"
+
 	"github.com/dotariel/denim/bluejeans"
 	vcard "github.com/emersion/go-vcard"
 	"github.com/stretchr/testify/assert"
@@ -41,11 +43,6 @@ func TestResolveSource(t *testing.T) {
 			env:         map[string]string{"DENIM_ROOMS": tmpDir.AppHome + "/rooms", "DENIM_HOME": tmpDir.AppHome, "HOME": tmpDir.UserHome},
 			expected:    tmpDir.AppHome + "/rooms",
 		},
-		{
-			description: "override with $DENIM_ROOMS url",
-			env:         map[string]string{"DENIM_ROOMS": "http://localhost:8080/rooms", "DENIM_HOME": tmpDir.AppHome, "HOME": tmpDir.UserHome},
-			expected:    "http://localhost:8080/rooms",
-		},
 	}
 
 	for _, tt := range testCases {
@@ -53,7 +50,7 @@ func TestResolveSource(t *testing.T) {
 			os.Setenv(k, v)
 		}
 
-		assert.Equal(t, tt.expected, resolveSource())
+		assert.Equal(t, tt.expected, resolveSource("rooms"))
 	}
 
 	teardown(tmpDir)
@@ -76,7 +73,7 @@ func TestLoad(t *testing.T) {
 
 	for _, tt := range testCases {
 		f := touch(tmp.Root + "/rooms") // Create a local file for use
-		os.Setenv("DENIM_ROOMS", f.Name())
+		os.Setenv("DENIM_HOME", tmp.Root)
 		f.WriteString(tt.input)
 		Load()
 		assert.Equal(t, tt.expected, len(rooms))
@@ -124,7 +121,7 @@ func TestExport(t *testing.T) {
 		{
 			description: "single entry without prefix",
 			input: []Room{
-				{Meeting: bluejeans.New("12345"), Name: "foo_1"},
+				{Meeting: bluejeans.New("12345"), Name: "foo_1", Hangout: hangouts.New("123")},
 			},
 			prefix:   "",
 			legacy:   false,
@@ -133,7 +130,7 @@ func TestExport(t *testing.T) {
 		{
 			description: "single entry in legacy format",
 			input: []Room{
-				{Meeting: bluejeans.New("12345"), Name: "foo_1"},
+				{Meeting: bluejeans.New("12345"), Name: "foo_1", Hangout: hangouts.New("123")},
 			},
 			prefix:   "",
 			legacy:   true,
@@ -142,7 +139,7 @@ func TestExport(t *testing.T) {
 		{
 			description: "single entry with prefix",
 			input: []Room{
-				{Meeting: bluejeans.New("12345"), Name: "foo_1"},
+				{Meeting: bluejeans.New("12345"), Name: "foo_1", Hangout: hangouts.New("123")},
 			},
 			prefix:   "foo-",
 			legacy:   false,
@@ -151,8 +148,8 @@ func TestExport(t *testing.T) {
 		{
 			description: "multiple entries",
 			input: []Room{
-				{Meeting: bluejeans.New("12345"), Name: "foo_1"},
-				{Meeting: bluejeans.New("56789"), Name: "bar_1"},
+				{Meeting: bluejeans.New("12345"), Name: "foo_1", Hangout: hangouts.New("123")},
+				{Meeting: bluejeans.New("56789"), Name: "bar_1", Hangout: hangouts.New("123")},
 			},
 			prefix:   "foo-",
 			legacy:   false,
@@ -204,7 +201,7 @@ func TestIsURL(t *testing.T) {
 }
 
 func TestPrint(t *testing.T) {
-	room := Room{"FOO", bluejeans.Meeting{MeetingID: "12345"}}
+	room := Room{"FOO", bluejeans.Meeting{MeetingID: "12345"}, hangouts.Hangout{}}
 
 	testCases := []struct {
 		input    Room

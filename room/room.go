@@ -30,7 +30,7 @@ type Room struct {
 //   - $HOME/.denim/rooms
 //   - $DENIM_HOME/.denim/rooms
 func Load() error {
-	source = resolveSource()
+	source = resolveSource("rooms")
 	if !Loaded() {
 		return fmt.Errorf("could not resolve room data source")
 	}
@@ -53,7 +53,7 @@ func Load() error {
 		}
 	}
 
-	source = resolveHangoutSource()
+	source = resolveSource("hangouts")
 	if !Loaded() {
 		return fmt.Errorf("could not resolve room data source")
 	}
@@ -164,33 +164,13 @@ Meeting URL: %v`
 	return fmt.Sprintf(template, r.Name, r.MeetingURL(), r.Phone(), r.Name, r.Phone(), r.MeetingURL())
 }
 
-func resolveSource() string {
-	if fileExists(os.Getenv("DENIM_ROOMS")) || isURL(os.Getenv("DENIM_ROOMS")) {
-		return os.Getenv("DENIM_ROOMS")
+func resolveSource(file string) string {
+	if fileExists(os.Getenv("DENIM_HOME") + "/" + file) {
+		return os.Getenv("DENIM_HOME") + "/" + file
 	}
 
-	if fileExists(os.Getenv("DENIM_HOME") + "/rooms") {
-		return os.Getenv("DENIM_HOME") + "/rooms"
-	}
-
-	if fileExists(os.Getenv("HOME") + "/.denim/rooms") {
-		return os.Getenv("HOME") + "/.denim/rooms"
-	}
-
-	return ""
-}
-
-func resolveHangoutSource() string {
-	if fileExists(os.Getenv("DENIM_ROOMS")) || isURL(os.Getenv("DENIM_ROOMS")) {
-		return os.Getenv("DENIM_ROOMS")
-	}
-
-	if fileExists(os.Getenv("DENIM_HOME") + "/hangouts") {
-		return os.Getenv("DENIM_HOME") + "/hangouts"
-	}
-
-	if fileExists(os.Getenv("HOME") + "/.denim/hangouts") {
-		return os.Getenv("HOME") + "/.denim/hangouts"
+	if fileExists(os.Getenv("HOME") + "/.denim/" + file) {
+		return os.Getenv("HOME") + "/.denim/" + file
 	}
 
 	return ""
