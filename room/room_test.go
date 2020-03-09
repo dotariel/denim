@@ -57,29 +57,30 @@ func TestResolveSource(t *testing.T) {
 }
 
 func TestLoad(t *testing.T) {
-	tmp := setup()
-
 	testCases := []struct {
 		description string
 		input       string
+		file        string
 		expected    int
 	}{
-		{description: "bad file", input: "FOO\r\nBAR\r\n", expected: 0},
-		{description: "single", input: "ABC 12345\n", expected: 1},
-		{description: "extra columns", input: "MORE THAN TWO COLUMNS\n", expected: 1},
-		{description: "multiple", input: "ABC 12345\nXYZ 9823", expected: 2},
-		{description: "empty lines", input: "\nABC 12345\n\nXYZ 9823", expected: 2},
+		{description: "bad file", input: "FOO\r\nBAR\r\n", file: "rooms", expected: 0},
+		{description: "single", input: "ABC 12345\n", file: "rooms", expected: 1},
+		{description: "extra columns", input: "MORE THAN TWO COLUMNS\n", file: "rooms", expected: 1},
+		{description: "multiple", input: "ABC 12345\nXYZ 9823", file: "rooms", expected: 2},
+		{description: "empty lines", input: "\nABC 12345\n\nXYZ 9823", file: "rooms", expected: 2},
+		{description: "single", input: "ABC 12345\n", file: "hangouts", expected: 1},
 	}
 
 	for _, tt := range testCases {
-		f := touch(tmp.Root + "/rooms") // Create a local file for use
-		os.Setenv("DENIM_HOME", tmp.Root)
+		tmp := setup()
+		os.Setenv("HOME", tmp.UserHome)
+		os.Setenv("DENIM_HOME", tmp.UserHome)
+		f := touch(tmp.UserHome + "/" + tt.file) // Create a local file for use
 		f.WriteString(tt.input)
 		Load()
 		assert.Equal(t, tt.expected, len(rooms))
+		teardown(tmp)
 	}
-
-	teardown(tmp)
 }
 
 func TestFind(t *testing.T) {
@@ -158,7 +159,6 @@ func TestExport(t *testing.T) {
 	}
 
 	for _, tt := range testCases {
-		t.Logf("Scenario: %v", tt.description)
 		rooms = tt.input
 		f, err := Export(tmpDir.Root+"/rooms.vcf", tt.prefix, tt.legacy)
 

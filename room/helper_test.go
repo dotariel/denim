@@ -30,6 +30,10 @@ func setup() TmpDirectory {
 	touch(tmpDir.AppHome + "/rooms")
 	touch(tmpDir.Root + "/rooms")
 
+	touch(tmpDir.UserHome + "/.denim/hangouts")
+	touch(tmpDir.AppHome + "/hangouts")
+	touch(tmpDir.Root + "/hangouts")
+
 	return tmpDir
 }
 
