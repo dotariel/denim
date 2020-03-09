@@ -30,6 +30,10 @@ MY_AWESOME_ROOM   123445578
 
 **NOTE**: Room names are not case-sensitive.
 
+Hangouts are handled separately, in a `hangouts` file in the denim settings directory
+
+HANGOUT_ROOM      xQb_6MjxPbC_TsHIDW3xAEEE
+
 ## Build
 
 To build and run denim locally:

@@ -37,9 +37,13 @@ func openRoom(cmd *cobra.Command, args []string) {
 
 	rm.SetUser(userName)
 
-	if useBrowser {
-		browser.OpenURL(rm.BrowserURL())
+	if rm.Hangout.HangoutID != "" {
+		browser.OpenURL(rm.Hangout.BrowserURL())
 	} else {
-		browser.OpenURL(rm.AppURL())
+		if useBrowser {
+			browser.OpenURL(rm.Meeting.BrowserURL())
+		} else {
+			browser.OpenURL(rm.Meeting.AppURL())
+		}
 	}
 }

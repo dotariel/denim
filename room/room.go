@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/dotariel/denim/bluejeans"
+	"github.com/dotariel/denim/hangouts"
 	vcard "github.com/emersion/go-vcard"
 )
 
@@ -21,6 +22,7 @@ var source string
 type Room struct {
 	Name string
 	bluejeans.Meeting
+	hangouts.Hangout
 }
 
 // Load searches the following paths for a room definition file:
@@ -28,7 +30,7 @@ type Room struct {
 //   - $HOME/.denim/rooms
 //   - $DENIM_HOME/.denim/rooms
 func Load() error {
-	source = resolveSource()
+	source = resolveSource("rooms")
 	if !Loaded() {
 		return fmt.Errorf("could not resolve room data source")
 	}
@@ -46,6 +48,28 @@ func Load() error {
 			r := Room{
 				Name:    parts[0],
 				Meeting: bluejeans.New(parts[1]),
+			}
+			rooms = append(rooms, r)
+		}
+	}
+
+	source = resolveSource("hangouts")
+	if !Loaded() {
+		return fmt.Errorf("could not resolve room data source")
+	}
+
+	bytes, err = read(source)
+	if err != nil {
+		return err
+	}
+
+	for _, line := range strings.Split(string(bytes), "\n") {
+		parts := strings.Fields(line)
+
+		if len(parts) > 1 {
+			r := Room{
+				Name:    parts[0],
+				Hangout: hangouts.New(parts[1]),
 			}
 			rooms = append(rooms, r)
 		}
@@ -140,17 +164,13 @@ Meeting URL: %v`
 	return fmt.Sprintf(template, r.Name, r.MeetingURL(), r.Phone(), r.Name, r.Phone(), r.MeetingURL())
 }
 
-func resolveSource() string {
-	if fileExists(os.Getenv("DENIM_ROOMS")) || isURL(os.Getenv("DENIM_ROOMS")) {
-		return os.Getenv("DENIM_ROOMS")
+func resolveSource(file string) string {
+	if fileExists(os.Getenv("DENIM_HOME") + "/" + file) {
+		return os.Getenv("DENIM_HOME") + "/" + file
 	}
 
-	if fileExists(os.Getenv("DENIM_HOME") + "/rooms") {
-		return os.Getenv("DENIM_HOME") + "/rooms"
-	}
-
-	if fileExists(os.Getenv("HOME") + "/.denim/rooms") {
-		return os.Getenv("HOME") + "/.denim/rooms"
+	if fileExists(os.Getenv("HOME") + "/.denim/" + file) {
+		return os.Getenv("HOME") + "/.denim/" + file
 	}
 
 	return ""
