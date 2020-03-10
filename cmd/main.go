@@ -11,7 +11,7 @@ var rootCmd *cobra.Command
 func init() {
 	rootCmd = &cobra.Command{
 		Use:  "denim",
-		Long: "Denim manages the use of persistent BlueJeans meetings as named rooms.",
+		Long: "Denim manages the use of persistent BlueJeans meetings and Google Hangouts as named rooms.",
 	}
 	rootCmd.AddCommand(command.Version())
 	rootCmd.AddCommand(command.List())

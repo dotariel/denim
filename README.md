@@ -1,6 +1,6 @@
 # denim
 
-Denim manages the use of persistent BlueJeans meetings as named rooms.
+Denim manages the use of persistent BlueJeans meetings or Google Hangouts as named rooms.
 
 [![Build Status](https://travis-ci.org/dotariel/denim.svg?branch=master)](https://travis-ci.org/dotariel/denim)
 [![Go Report Card](https://goreportcard.com/badge/github.com/dotariel/denim)](https://goreportcard.com/report/github.com/dotariel/denim)
@@ -10,9 +10,21 @@ Denim manages the use of persistent BlueJeans meetings as named rooms.
 
 Denim will look for room definition files in the following locations and order:
 
-* `$DENIM_ROOMS`
-* `$HOME/.denim/rooms`
-* `$DENIM_HOME/rooms`
+* `$HOME/.denim/`
+* `$DENIM_HOME/`
+
+BlueJeans and Hangouts room definitions are managed in separate files:
+
+* BlueJeans - `rooms`
+* Hangouts - `hangouts`
+
+For example:
+
+```
+$DENIM_HOME
+├── hangouts
+└── rooms
+```
 
 ### File Structure
 
@@ -30,10 +42,6 @@ MY_AWESOME_ROOM   123445578
 
 **NOTE**: Room names are not case-sensitive.
 
-Hangouts are handled separately, in a `hangouts` file in the denim settings directory
-
-HANGOUT_ROOM      xQb_6MjxPbC_TsHIDW3xAEEE
-
 ## Build
 
 To build and run denim locally:
@@ -47,7 +55,7 @@ $ make install
 Denim supports multiple commands. Use `denim -h` to display the usage.
 
 ```
-Denim manages the use of persistent BlueJeans meetings as named rooms.
+Denim manages the use of persistent BlueJeans meetings and Google Hangouts as named rooms.
 
 Usage:
   denim [command]
