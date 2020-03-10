@@ -24,10 +24,9 @@ type Room struct {
 	Name string
 }
 
-// Load searches the following paths for a room definition file:
-//   - $DENIM_ROOMS (path to a FILE or a URL)
-//   - $HOME/.denim/rooms
-//   - $DENIM_HOME/.denim/rooms
+// Load searches the following paths for a `rooms` and/or `hangouts` definition file:
+//   - $HOME/.denim/
+//   - $DENIM_HOME/.denim/
 func Load() error {
 	source = resolveSource("rooms")
 	if !Loaded() {
