@@ -29,8 +29,8 @@ type Meeting struct {
 }
 
 // New creates a Meeting from a given id.
-func New(id string) Meeting {
-	return Meeting{
+func New(id string) *Meeting {
+	return &Meeting{
 		ContextVersion: ContextVersion,
 		MeetingAPI:     MeetingAPI,
 		MeetingID:      id,
@@ -39,9 +39,13 @@ func New(id string) Meeting {
 	}
 }
 
-// SetUser sets the meeting participant.
-func (m *Meeting) SetUser(user string) {
-	m.UserFullName = user
+func (m Meeting) Classification() string {
+	return "BlueJeans Room"
+}
+
+// ID returns the internal ID of the Meeting
+func (m Meeting) ID() string {
+	return m.MeetingID
 }
 
 // AppURL returns a URL that can be used to open a meeting using the native BlueJeans app.
@@ -63,6 +67,11 @@ func (m Meeting) MeetingURL() string {
 // meeting.
 func (m Meeting) Phone() string {
 	return fmt.Sprintf("%s,,%s##", PhoneUSA, m.MeetingID)
+}
+
+// SetUser sets the meeting participant.
+func (m *Meeting) SetUser(user string) {
+	m.UserFullName = user
 }
 
 func (m Meeting) marshal() string {

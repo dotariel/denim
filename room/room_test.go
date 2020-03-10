@@ -1,12 +1,11 @@
 package room
 
 import (
+	"github.com/dotariel/denim/hangouts"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
-
-	"github.com/dotariel/denim/hangouts"
 
 	"github.com/dotariel/denim/bluejeans"
 	vcard "github.com/emersion/go-vcard"
@@ -85,8 +84,8 @@ func TestLoad(t *testing.T) {
 
 func TestFind(t *testing.T) {
 	rooms = []Room{
-		{Meeting: bluejeans.New("12345"), Name: "foo"},
-		{Meeting: bluejeans.New("67890"), Name: "bar"},
+		{Session: bluejeans.New("12345"), Name: "foo"},
+		{Session: bluejeans.New("67890"), Name: "bar"},
 	}
 
 	testCases := []struct {
@@ -122,7 +121,7 @@ func TestExport(t *testing.T) {
 		{
 			description: "single entry without prefix",
 			input: []Room{
-				{Meeting: bluejeans.New("12345"), Name: "foo_1", Hangout: hangouts.New("123")},
+				{Session: bluejeans.New("12345"), Name: "foo_1"},
 			},
 			prefix:   "",
 			legacy:   false,
@@ -131,7 +130,7 @@ func TestExport(t *testing.T) {
 		{
 			description: "single entry in legacy format",
 			input: []Room{
-				{Meeting: bluejeans.New("12345"), Name: "foo_1", Hangout: hangouts.New("123")},
+				{Session: bluejeans.New("12345"), Name: "foo_1"},
 			},
 			prefix:   "",
 			legacy:   true,
@@ -140,7 +139,7 @@ func TestExport(t *testing.T) {
 		{
 			description: "single entry with prefix",
 			input: []Room{
-				{Meeting: bluejeans.New("12345"), Name: "foo_1", Hangout: hangouts.New("123")},
+				{Session: bluejeans.New("12345"), Name: "foo_1"},
 			},
 			prefix:   "foo-",
 			legacy:   false,
@@ -149,8 +148,9 @@ func TestExport(t *testing.T) {
 		{
 			description: "multiple entries",
 			input: []Room{
-				{Meeting: bluejeans.New("12345"), Name: "foo_1", Hangout: hangouts.New("123")},
-				{Meeting: bluejeans.New("56789"), Name: "bar_1", Hangout: hangouts.New("123")},
+				{Session: bluejeans.New("12345"), Name: "foo_1"},
+				{Session: bluejeans.New("56789"), Name: "bar_1"},
+				{Session: hangouts.New("56789"), Name: "hng_1"},
 			},
 			prefix:   "foo-",
 			legacy:   false,
@@ -201,7 +201,7 @@ func TestIsURL(t *testing.T) {
 }
 
 func TestPrint(t *testing.T) {
-	room := Room{"FOO", bluejeans.Meeting{MeetingID: "12345"}, hangouts.Hangout{}}
+	room := Room{&bluejeans.Meeting{MeetingID: "12345"}, "FOO"}
 
 	testCases := []struct {
 		input    Room
@@ -239,8 +239,8 @@ func TestSource(t *testing.T) {
 
 func TestAll(t *testing.T) {
 	rooms = []Room{
-		{Meeting: bluejeans.New("12345"), Name: "foo_1"},
-		{Meeting: bluejeans.New("67890"), Name: "foo_2"},
+		{Session: bluejeans.New("12345"), Name: "foo_1"},
+		{Session: bluejeans.New("67890"), Name: "foo_2"},
 	}
 
 	assert.Equal(t, All(), rooms)

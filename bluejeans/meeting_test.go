@@ -7,7 +7,7 @@ import (
 )
 
 var testCases = []struct {
-	input              Meeting
+	input              *Meeting
 	user               string
 	expectedJSON       string
 	expectedBrowserURL string
@@ -35,16 +35,18 @@ var testCases = []struct {
 	},
 }
 
+func TestID(t *testing.T) {
+	assert.Equal(t, "12345", New("12345").ID())
+}
+
+func TestClassification(t *testing.T) {
+	assert.Equal(t, "BlueJeans Room", New("12345").Classification())
+}
+
 func TestAppURL(t *testing.T) {
 	for _, tt := range testCases {
 		tt.input.SetUser(tt.user)
 		assert.Equal(t, tt.expectedAppURL, tt.input.AppURL())
-	}
-}
-
-func TestPhone(t *testing.T) {
-	for _, tt := range testCases {
-		assert.Equal(t, tt.expectedPhone, tt.input.Phone())
 	}
 }
 
@@ -57,6 +59,12 @@ func TestBrowserURL(t *testing.T) {
 func TestMeetingURL(t *testing.T) {
 	for _, tt := range testCases {
 		assert.Equal(t, tt.expectedMeetingURL, tt.input.MeetingURL())
+	}
+}
+
+func TestPhone(t *testing.T) {
+	for _, tt := range testCases {
+		assert.Equal(t, tt.expectedPhone, tt.input.Phone())
 	}
 }
 

@@ -20,9 +20,8 @@ var source string
 
 // Room wraps a meeting and provides a name to associate with it.
 type Room struct {
+	Session
 	Name string
-	bluejeans.Meeting
-	hangouts.Hangout
 }
 
 // Load searches the following paths for a room definition file:
@@ -47,7 +46,7 @@ func Load() error {
 		if len(parts) > 1 {
 			r := Room{
 				Name:    parts[0],
-				Meeting: bluejeans.New(parts[1]),
+				Session: bluejeans.New(parts[1]),
 			}
 			rooms = append(rooms, r)
 		}
@@ -69,7 +68,7 @@ func Load() error {
 		if len(parts) > 1 {
 			r := Room{
 				Name:    parts[0],
-				Hangout: hangouts.New(parts[1]),
+				Session: hangouts.New(parts[1]),
 			}
 			rooms = append(rooms, r)
 		}
@@ -97,7 +96,7 @@ func All() []Room {
 func Find(identifier string) (Room, error) {
 	for _, room := range rooms {
 		id := strings.ToLower(identifier)
-		if strings.ToLower(room.MeetingID) == id || strings.ToLower(room.Name) == id {
+		if strings.ToLower(room.ID()) == id || strings.ToLower(room.Name) == id {
 			return room, nil
 		}
 	}
@@ -139,7 +138,7 @@ func Export(path string, prefix string, legacy bool) (*os.File, error) {
 // Print returns a user-friendly string describing the room.
 func (r Room) Print(verbose bool) string {
 	if verbose {
-		return fmt.Sprintf("%-15s (%s) Phone: %s", r.Name, r.MeetingID, r.Phone())
+		return fmt.Sprintf("%-15s (%s) Phone: %s", r.Name, r.ID(), r.Phone())
 	}
 
 	return r.Name
@@ -157,11 +156,11 @@ OR
 %v
 
 Put in meeting body:
-This meeting is scheduled in a BlueJeans Room called %v
+This meeting is scheduled in a %v called %v
 Dial-in: %v
 Meeting URL: %v`
 
-	return fmt.Sprintf(template, r.Name, r.MeetingURL(), r.Phone(), r.Name, r.Phone(), r.MeetingURL())
+	return fmt.Sprintf(template, r.Name, r.MeetingURL(), r.Phone(), r.Classification(), r.Name, r.Phone(), r.MeetingURL())
 }
 
 func resolveSource(file string) string {

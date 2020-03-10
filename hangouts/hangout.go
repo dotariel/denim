@@ -17,20 +17,45 @@ type Hangout struct {
 	HangoutID      string `json:"meeting_id"`
 }
 
-// New creates a Meeting from a given id.
-func New(id string) Hangout {
-	return Hangout{
+// New creates a Hangout from a given id.
+func New(id string) *Hangout {
+	return &Hangout{
 		ContextVersion: ContextVersion,
 		HangoutAPI:     HangoutAPI,
 		HangoutID:      id,
 	}
 }
 
-func (m Hangout) AppURL() string {
-	return fmt.Sprintf("%s/%s", HangoutAPI, m.HangoutID)
+func (h Hangout) Classification() string {
+	return "Hangout"
 }
 
-// BrowserURL returns a URL that can be used to open a meeting in a browser.
-func (m Hangout) BrowserURL() string {
-	return fmt.Sprintf("%s/%s", HangoutAPI, m.HangoutID)
+// ID returns the Hangout id
+func (h Hangout) ID() string {
+	return h.HangoutID
+}
+
+// AppURL returns the same value as the BrowserURL
+func (h Hangout) AppURL() string {
+	return h.BrowserURL()
+}
+
+// BrowserURL returns a URL that can be used to open a hangout in a browser.
+func (h Hangout) BrowserURL() string {
+	return fmt.Sprintf("%s/%s", HangoutAPI, h.HangoutID)
+}
+
+// MeetingURL returns the same value as the BrowserURL
+func (h Hangout) MeetingURL() string {
+	return h.BrowserURL()
+}
+
+// Phone returns an empty string, as Hangouts do not implement a dial-in number
+func (h Hangout) Phone() string {
+	return ""
+}
+
+// SetUser does nothing as Hangouts do not support modifying the participant name
+func (h *Hangout) SetUser(user string) {
+	// DO NOTHING
 }

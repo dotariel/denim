@@ -10,3 +10,9 @@ N:foo-bar_1
 TEL:+14087407256,,56789##
 NOTE:Use for meeting location:\nbar_1: https://bluejeans.com/56789\nOR\n+14087407256,,56789##\n\nPut in meeting body:\nThis meeting is scheduled in a BlueJeans Room called bar_1\nDial-in: +14087407256,,56789##\nMeeting URL: https://bluejeans.com/56789
 END:VCARD
+BEGIN:VCARD
+VERSION:4.0
+N:foo-hng_1
+TEL:
+NOTE:Use for meeting location:\nhng_1: https://hangouts.google.com/call/56789\nOR\n\n\nPut in meeting body:\nThis meeting is scheduled in a Hangout called hng_1\nDial-in: \nMeeting URL: https://hangouts.google.com/call/56789
+END:VCARD
