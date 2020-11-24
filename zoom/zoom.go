@@ -7,7 +7,8 @@ const (
 	ContextVersion = "1.0.0"
 
 	// ZoomAPI is the URL to the Zooms page.
-	ZoomAPI = "https://stackct.zoom.us/j"
+	ZoomAPI  = "https://stackct.zoom.us/j"
+	PhoneUSA = "+16468769923"
 )
 
 // zoom encapsulates the model that is required to construct a zoom.
@@ -59,7 +60,7 @@ func (z Zoom) MeetingURL() string {
 
 // Phone returns an empty string, as Zooms do not implement a dial-in number
 func (z Zoom) Phone() string {
-	return ""
+	return fmt.Sprintf("%s,,%s#", PhoneUSA, z.ZoomID)
 }
 
 // SetUser does nothing as Zooms do not support modifying the participant name
