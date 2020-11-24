@@ -13,6 +13,7 @@ var testCases = []struct {
 	expectedAppURL     string
 	expectedBrowserURL string
 	expectedMeetingURL string
+	expectedPhoneUS    string
 }{
 	{
 		input:              New("12345", "abcdef"),
@@ -21,6 +22,7 @@ var testCases = []struct {
 		expectedAppURL:     "https://stackct.zoom.us/j/12345?pwd=abcdef",
 		expectedBrowserURL: "https://stackct.zoom.us/j/12345?pwd=abcdef",
 		expectedMeetingURL: "https://stackct.zoom.us/j/12345?pwd=abcdef",
+		expectedPhoneUS:    "+16468769923,,12345#",
 	},
 }
 
@@ -55,5 +57,7 @@ func TestMeetingURL(t *testing.T) {
 }
 
 func TestPhone(t *testing.T) {
-	assert.Equal(t, "", New("12345", "abcdef").Phone())
+	for _, tt := range testCases {
+		assert.Equal(t, tt.expectedPhoneUS, New("12345", "abcdef").Phone())
+	}
 }
