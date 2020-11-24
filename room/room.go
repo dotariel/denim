@@ -10,13 +10,16 @@ import (
 
 	"github.com/dotariel/denim/bluejeans"
 	"github.com/dotariel/denim/hangouts"
+	"github.com/dotariel/denim/zoom"
 	vcard "github.com/emersion/go-vcard"
 )
 
 var rooms []Room
 
 // Source is the resolved room definition file.
-var source string
+var bluejeansSource string
+var hangoutsSource string
+var zoomSource string
 
 // Room wraps a meeting and provides a name to associate with it.
 type Room struct {
@@ -28,62 +31,83 @@ type Room struct {
 //   - $HOME/.denim/
 //   - $DENIM_HOME/.denim/
 func Load() error {
-	source = resolveSource("rooms")
-	if !Loaded() {
-		return fmt.Errorf("could not resolve room data source")
-	}
-
-	bytes, err := read(source)
-	if err != nil {
-		return err
-	}
-
 	rooms = make([]Room, 0)
-	for _, line := range strings.Split(string(bytes), "\n") {
-		parts := strings.Fields(line)
 
-		if len(parts) > 1 {
-			r := Room{
-				Name:    parts[0],
-				Session: bluejeans.New(parts[1]),
+	bluejeansSource = resolveSource("rooms")
+	if Loaded(bluejeansSource) {
+		bytes, err := read(bluejeansSource)
+		if err != nil {
+			return err
+		}
+
+		for _, line := range strings.Split(string(bytes), "\n") {
+			parts := strings.Fields(line)
+
+			if len(parts) > 1 {
+				r := Room{
+					Name:    parts[0],
+					Session: bluejeans.New(parts[1]),
+				}
+				rooms = append(rooms, r)
 			}
-			rooms = append(rooms, r)
 		}
 	}
 
-	source = resolveSource("hangouts")
-	if !Loaded() {
-		return fmt.Errorf("could not resolve room data source")
-	}
+	hangoutsSource = resolveSource("hangouts")
+	if Loaded(hangoutsSource) {
+		bytes, err := read(hangoutsSource)
+		if err != nil {
+			return err
+		}
 
-	bytes, err = read(source)
-	if err != nil {
-		return err
-	}
+		for _, line := range strings.Split(string(bytes), "\n") {
+			parts := strings.Fields(line)
 
-	for _, line := range strings.Split(string(bytes), "\n") {
-		parts := strings.Fields(line)
-
-		if len(parts) > 1 {
-			r := Room{
-				Name:    parts[0],
-				Session: hangouts.New(parts[1]),
+			if len(parts) > 1 {
+				r := Room{
+					Name:    parts[0],
+					Session: hangouts.New(parts[1]),
+				}
+				rooms = append(rooms, r)
 			}
-			rooms = append(rooms, r)
+		}
+	}
+
+	zoomSource = resolveSource("zoom")
+	if Loaded(zoomSource) {
+		bytes, err := read(zoomSource)
+		if err != nil {
+			return err
+		}
+
+		for _, line := range strings.Split(string(bytes), "\n") {
+			parts := strings.Fields(line)
+
+			if len(parts) > 1 {
+				r := Room{
+					Name:    parts[0],
+					Session: zoom.New(parts[1], parts[2]),
+				}
+				rooms = append(rooms, r)
+			}
 		}
 	}
 
 	return nil
 }
 
+func AnyLoaded() bool {
+	return Loaded(bluejeansSource) || Loaded(hangoutsSource) || Loaded(zoomSource)
+}
+
 // Loaded indicates if the room data has been loaded
-func Loaded() bool {
+func Loaded(source string) bool {
 	return source != ""
 }
 
 // Source returns the underlying source of room data
 func Source() string {
-	return source
+	return bluejeansSource
 }
 
 // All returns a list of all the rooms.
@@ -198,7 +222,7 @@ func isURL(path string) bool {
 func bytesFromFile(file string) ([]byte, error) {
 	bytes, err := ioutil.ReadFile(file)
 	if err != nil {
-		return nil, fmt.Errorf("file could not be read; %s", source)
+		return nil, fmt.Errorf("file could not be read; %s", file)
 	}
 
 	return bytes, nil
