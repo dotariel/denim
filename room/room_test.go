@@ -1,11 +1,12 @@
 package room
 
 import (
-	"github.com/dotariel/denim/hangouts"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
+
+	"github.com/dotariel/denim/hangouts"
 
 	"github.com/dotariel/denim/bluejeans"
 	vcard "github.com/emersion/go-vcard"
@@ -233,8 +234,8 @@ func TestBytesFromURL(t *testing.T) {
 }
 
 func TestSource(t *testing.T) {
-	source = "foo"
-	assert.Equal(t, Source(), source)
+	bluejeansSource = "foo"
+	assert.Equal(t, Source(), bluejeansSource)
 }
 
 func TestAll(t *testing.T) {
