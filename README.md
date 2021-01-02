@@ -1,6 +1,6 @@
 # denim
 
-Denim manages the use of persistent BlueJeans meetings or Google Hangouts as named rooms.
+Denim manages the use of persistent BlueJeans meetings, Google Hangouts, and Zoom Calls as named rooms.
 
 [![Build Status](https://travis-ci.com/dotariel/denim.svg?branch=master)](https://travis-ci.com/dotariel/denim)
 [![Go Report Card](https://goreportcard.com/badge/github.com/dotariel/denim)](https://goreportcard.com/report/github.com/dotariel/denim)
@@ -13,10 +13,11 @@ Denim will look for room definition files in the following locations and order:
 * `$HOME/.denim/`
 * `$DENIM_HOME/`
 
-BlueJeans and Hangouts room definitions are managed in separate files:
+Room definitions are managed in separate files:
 
 * BlueJeans - `rooms`
 * Hangouts - `hangouts`
+* Zoom - `zoom`
 
 For example:
 
@@ -24,6 +25,7 @@ For example:
 $DENIM_HOME
 ├── hangouts
 └── rooms
+└── zoom
 ```
 
 ### File Structure
