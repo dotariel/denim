@@ -19,7 +19,7 @@ var testCases = []struct {
 		input:              New("12345", "abcdef"),
 		user:               "",
 		expectedJSON:       `{"ctxver":"1.0.0","meeting_api":"https://stackct.zoom.us/j/","meeting_id":"12345", "meeting_pwd":"abcdef"}`,
-		expectedAppURL:     "https://stackct.zoom.us/j/12345?pwd=abcdef",
+		expectedAppURL:     "zoommtg://stackct.zoom.us/join?action=join&confno=12345&pwd=abcdef",
 		expectedBrowserURL: "https://stackct.zoom.us/j/12345?pwd=abcdef",
 		expectedMeetingURL: "https://stackct.zoom.us/j/12345?pwd=abcdef",
 		expectedPhoneUS:    "+16468769923,,12345#",

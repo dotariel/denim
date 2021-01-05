@@ -6,15 +6,16 @@ const (
 	// ContextVersion is a fixed value.
 	ContextVersion = "1.0.0"
 
-	// ZoomAPI is the URL to the Zooms page.
-	ZoomAPI  = "https://stackct.zoom.us/j"
-	PhoneUSA = "+16468769923"
+	// AppUri is the URL to the Zooms page.
+	AppUri     = "zoommtg://stackct.zoom.us"
+	BrowserUri = "https://stackct.zoom.us"
+	PhoneUSA   = "+16468769923"
 )
 
 // zoom encapsulates the model that is required to construct a zoom.
 type Zoom struct {
 	ContextVersion string `json:"ctxver"`
-	ZoomAPI        string `json:"meeting_api"`
+	AppUri         string `json:"meeting_api"`
 	ZoomID         string `json:"meeting_id"`
 	ZoomPWD        string `json:"meeting_pwd"`
 }
@@ -23,7 +24,7 @@ type Zoom struct {
 func New(id string, pwd string) *Zoom {
 	return &Zoom{
 		ContextVersion: ContextVersion,
-		ZoomAPI:        ZoomAPI,
+		AppUri:         AppUri,
 		ZoomID:         id,
 		ZoomPWD:        pwd,
 	}
@@ -45,12 +46,12 @@ func (z Zoom) PWD() string {
 
 // AppURL returns the same value as the BrowserURL
 func (z Zoom) AppURL() string {
-	return z.BrowserURL()
+	return fmt.Sprintf("%s/join?action=join&confno=%s&pwd=%s", AppUri, z.ZoomID, z.ZoomPWD)
 }
 
 // BrowserURL returns a URL that can be used to open a Zoom in a browser.
 func (z Zoom) BrowserURL() string {
-	return fmt.Sprintf("%s/%s?pwd=%s", ZoomAPI, z.ZoomID, z.ZoomPWD)
+	return fmt.Sprintf("%s/j/%s?pwd=%s", BrowserUri, z.ZoomID, z.ZoomPWD)
 }
 
 // MeetingURL returns the same value as the BrowserURL
