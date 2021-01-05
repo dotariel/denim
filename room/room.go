@@ -86,7 +86,7 @@ func Load() error {
 			if len(parts) > 1 {
 				r := Room{
 					Name:    parts[0],
-					Session: zoom.New(parts[1], parts[2]),
+					Session: zoom.New(parts[1], parts[2], parts[3]),
 				}
 				rooms = append(rooms, r)
 			}
