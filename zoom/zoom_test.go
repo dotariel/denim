@@ -16,26 +16,26 @@ var testCases = []struct {
 	expectedPhoneUS    string
 }{
 	{
-		input:              New("12345", "abcdef"),
+		input:              New("org", "12345", "abcdef"),
 		user:               "",
-		expectedJSON:       `{"ctxver":"1.0.0","meeting_api":"https://stackct.zoom.us/j/","meeting_id":"12345", "meeting_pwd":"abcdef"}`,
-		expectedAppURL:     "https://stackct.zoom.us/j/12345?pwd=abcdef",
-		expectedBrowserURL: "https://stackct.zoom.us/j/12345?pwd=abcdef",
-		expectedMeetingURL: "https://stackct.zoom.us/j/12345?pwd=abcdef",
+		expectedJSON:       `{"ctxver":"1.0.0","meeting_api":"https://org.zoom.us/j/","organization":"org","meeting_id":"12345", "meeting_pwd":"abcdef"}`,
+		expectedAppURL:     "zoommtg://zoom.us/join?action=join&confno=12345&pwd=abcdef",
+		expectedBrowserURL: "https://org.zoom.us/j/12345?pwd=abcdef",
+		expectedMeetingURL: "https://org.zoom.us/j/12345?pwd=abcdef",
 		expectedPhoneUS:    "+16468769923,,12345#",
 	},
 }
 
 func TestID(t *testing.T) {
-	assert.Equal(t, "12345", New("12345", "abcdef").ID())
+	assert.Equal(t, "12345", New("org", "12345", "abcdef").ID())
 }
 
 func TestPWD(t *testing.T) {
-	assert.Equal(t, "abcdef", New("12345", "abcdef").PWD())
+	assert.Equal(t, "abcdef", New("org", "12345", "abcdef").PWD())
 }
 
 func TestClassification(t *testing.T) {
-	assert.Equal(t, "Zoom", New("12345", "abcdef").Classification())
+	assert.Equal(t, "Zoom", New("org", "12345", "abcdef").Classification())
 }
 
 func TestAppURL(t *testing.T) {
@@ -58,6 +58,6 @@ func TestMeetingURL(t *testing.T) {
 
 func TestPhone(t *testing.T) {
 	for _, tt := range testCases {
-		assert.Equal(t, tt.expectedPhoneUS, New("12345", "abcdef").Phone())
+		assert.Equal(t, tt.expectedPhoneUS, New("org", "12345", "abcdef").Phone())
 	}
 }
