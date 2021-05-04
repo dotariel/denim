@@ -15,6 +15,7 @@ func init() {
 	}
 	rootCmd.AddCommand(command.Version())
 	rootCmd.AddCommand(command.List())
+	rootCmd.AddCommand(command.Show())
 	rootCmd.AddCommand(command.Open())
 	rootCmd.AddCommand(command.Export())
 
