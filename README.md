@@ -67,6 +67,7 @@ Available Commands:
   help        Help about any command
   list        list available rooms
   open        open a room
+  show        show room detail
   version     display version information
 
 Flags:
