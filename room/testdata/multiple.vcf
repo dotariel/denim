@@ -16,3 +16,9 @@ N:foo-hng_1
 TEL:
 NOTE:Use for meeting location:\nhng_1: https://hangouts.google.com/call/56789\nOR\n\n\nPut in meeting body:\nThis meeting is scheduled in a Hangout called hng_1\nDial-in: \nMeeting URL: https://hangouts.google.com/call/56789
 END:VCARD
+BEGIN:VCARD
+VERSION:4.0
+N:foo-zoom_1
+NOTE:Use for meeting location:\nzoom_1: https://org.zoom.us/j/67890?pwd=___\nOR\n+16468769923\,\,67890#\n\nPut in meeting body:\nThis meeting is scheduled in a Zoom called zoom_1\nDial-in: +16468769923\,\,67890#\nMeeting URL: https://org.zoom.us/j/67890?pwd=___
+TEL:+16468769923\,\,67890#
+END:VCARD

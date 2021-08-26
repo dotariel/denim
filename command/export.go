@@ -13,14 +13,14 @@ var legacy bool
 // Export returns a command to produce export room information to VCF.
 func Export() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:               "export FILE [flags]",
+		Use:               "export <FILE, file.vcf> [flags]",
 		Short:             "export rooms to VCF (Variant Call Format)",
 		PersistentPreRunE: validateSource,
 		Args:              cobra.ExactArgs(1),
 		Run:               export,
 	}
 
-	cmd.Flags().StringVarP(&prefix, "prefix", "p", "bluejeans-", "name prefix for card entries")
+	cmd.Flags().StringVarP(&prefix, "prefix", "p", "", "name prefix for card entries")
 	cmd.Flags().BoolVarP(&legacy, "legacy", "l", false, "use legacy (3.0) format")
 
 	return cmd
