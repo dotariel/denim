@@ -7,9 +7,10 @@ import (
 	"testing"
 
 	"github.com/dotariel/denim/hangouts"
-
+	"github.com/dotariel/denim/zoom"
 	"github.com/dotariel/denim/bluejeans"
 	vcard "github.com/emersion/go-vcard"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -152,6 +153,7 @@ func TestExport(t *testing.T) {
 				{Session: bluejeans.New("12345"), Name: "foo_1"},
 				{Session: bluejeans.New("56789"), Name: "bar_1"},
 				{Session: hangouts.New("56789"), Name: "hng_1"},
+				{Session: zoom.New("org", "67890", "___"), Name: "zoom_1"},
 			},
 			prefix:   "foo-",
 			legacy:   false,
