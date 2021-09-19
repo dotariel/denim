@@ -4,6 +4,7 @@ name: build
 on:
   push:
     branches: [ master ]
+  create:
 
 jobs:
   build:
