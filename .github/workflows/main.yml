@@ -7,11 +7,6 @@ on:
   create:
 
 jobs:
-  test:
-    runs-on: self-hosted
-    steps:
-      - run: echo "Hello"
-
   build:
     runs-on: ubuntu-latest
     steps:
