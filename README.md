@@ -2,7 +2,7 @@
 
 Denim manages the use of persistent BlueJeans meetings, Google Hangouts, and Zoom Calls as named rooms.
 
-[![Build Status](https://travis-ci.com/dotariel/denim.svg?branch=master)](https://travis-ci.com/dotariel/denim)
+![build](https://github.com/dotariel/denim/actions/workflows/main.yml/badge.svg)
 [![Go Report Card](https://goreportcard.com/badge/github.com/dotariel/denim)](https://goreportcard.com/report/github.com/dotariel/denim)
 [![codecov](https://codecov.io/gh/dotariel/denim/branch/master/graph/badge.svg)](https://codecov.io/gh/dotariel/denim)
 
@@ -10,14 +10,14 @@ Denim manages the use of persistent BlueJeans meetings, Google Hangouts, and Zoo
 
 Denim will look for room definition files in the following locations and order:
 
-* `$HOME/.denim/`
-* `$DENIM_HOME/`
+- `$HOME/.denim/`
+- `$DENIM_HOME/`
 
 Room definitions are managed in separate files:
 
-* BlueJeans - `rooms`
-* Hangouts - `hangouts`
-* Zoom - `zoom`
+- BlueJeans - `rooms`
+- Hangouts - `hangouts`
+- Zoom - `zoom`
 
 For example:
 
