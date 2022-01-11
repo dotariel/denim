@@ -1,7 +1,7 @@
 _denim_completion_rooms()
 {
   if [[ -f ~/.denim/rooms ]]; then
-    room_names=`awk '{ print tolower($1) }' ~/.denim/rooms`
+    room_names=`cat  ~/.denim/* | awk '{ print tolower($1) }'`
     if [ $COMP_CWORD -eq 2 ]; then
         COMPREPLY+=($(compgen -W "$room_names" -- "${COMP_WORDS[2]}"))
         return 0
