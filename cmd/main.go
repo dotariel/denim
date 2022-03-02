@@ -13,6 +13,9 @@ func init() {
 		Use:  "denim",
 		Long: "Denim manages the use of persistent BlueJeans meetings and Google Hangouts as named rooms.",
 	}
+
+	rootCmd.CompletionOptions.DisableDefaultCmd = true
+
 	rootCmd.AddCommand(command.Version())
 	rootCmd.AddCommand(command.List())
 	rootCmd.AddCommand(command.Show())
