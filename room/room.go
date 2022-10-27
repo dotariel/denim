@@ -43,7 +43,7 @@ func Load() error {
 		for _, line := range strings.Split(string(bytes), "\n") {
 			parts := strings.Fields(line)
 
-			if len(parts) > 1 {
+			if len(parts) > 1 && !strings.HasPrefix(parts[0], "#") {
 				r := Room{
 					Name:    parts[0],
 					Session: bluejeans.New(parts[1]),
@@ -83,7 +83,7 @@ func Load() error {
 		for _, line := range strings.Split(string(bytes), "\n") {
 			parts := strings.Fields(line)
 
-			if len(parts) > 1 {
+			if len(parts) > 1 && !strings.HasPrefix(parts[0], "#") {
 				r := Room{
 					Name:    parts[0],
 					Session: zoom.New(parts[1], parts[2], parts[3]),
