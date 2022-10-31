@@ -17,9 +17,11 @@ import (
 var rooms []Room
 
 // Source is the resolved room definition file.
-var bluejeansSource string
-var hangoutsSource string
-var zoomSource string
+var (
+	bluejeansSource string
+	hangoutsSource  string
+	zoomSource      string
+)
 
 // Room wraps a meeting and provides a name to associate with it.
 type Room struct {
@@ -34,48 +36,19 @@ func Load() error {
 	rooms = make([]Room, 0)
 
 	bluejeansSource = resolveSource("rooms")
-	if Loaded(bluejeansSource) {
-		bytes, err := read(bluejeansSource)
-		if err != nil {
-			return err
-		}
-
-		for _, line := range strings.Split(string(bytes), "\n") {
-			parts := strings.Fields(line)
-
-			if len(parts) > 1 {
-				r := Room{
-					Name:    parts[0],
-					Session: bluejeans.New(parts[1]),
-				}
-				rooms = append(rooms, r)
-			}
-		}
-	}
-
 	hangoutsSource = resolveSource("hangouts")
-	if Loaded(hangoutsSource) {
-		bytes, err := read(hangoutsSource)
-		if err != nil {
-			return err
-		}
-
-		for _, line := range strings.Split(string(bytes), "\n") {
-			parts := strings.Fields(line)
-
-			if len(parts) > 1 {
-				r := Room{
-					Name:    parts[0],
-					Session: hangouts.New(parts[1]),
-				}
-				rooms = append(rooms, r)
-			}
-		}
-	}
-
 	zoomSource = resolveSource("zoom")
-	if Loaded(zoomSource) {
-		bytes, err := read(zoomSource)
+
+	loadFromFile(bluejeansSource, bluejeans.Parse)
+	loadFromFile(hangoutsSource, hangouts.Parse)
+	loadFromFile(zoomSource, zoom.Parse)
+
+	return nil
+}
+
+func loadFromFile[T Session](source string, parseFunc func(string) T) error {
+	if Loaded(source) {
+		bytes, err := read(source)
 		if err != nil {
 			return err
 		}
@@ -86,8 +59,9 @@ func Load() error {
 			if len(parts) > 1 {
 				r := Room{
 					Name:    parts[0],
-					Session: zoom.New(parts[1], parts[2], parts[3]),
+					Session: parseFunc(line),
 				}
+
 				rooms = append(rooms, r)
 			}
 		}

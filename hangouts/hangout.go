@@ -1,6 +1,9 @@
 package hangouts
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 const (
 	// ContextVersion is a fixed value.
@@ -24,6 +27,16 @@ func New(id string) *Hangout {
 		HangoutAPI:     HangoutAPI,
 		HangoutID:      id,
 	}
+}
+
+func Parse(input string) *Hangout {
+	parts := strings.Fields(input)
+
+	if !strings.HasPrefix(input, "#") && len(parts) > 1 {
+		return New(parts[1])
+	}
+
+	return nil
 }
 
 func (h Hangout) Classification() string {

@@ -1,6 +1,9 @@
 package zoom
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 const (
 	// ContextVersion is a fixed value.
@@ -14,7 +17,7 @@ const (
 type Zoom struct {
 	ContextVersion string `json:"ctxver"`
 	AppUri         string `json:"meeting_api"`
-	Organization   string `json:organization`
+	Organization   string `json:"organization"`
 	ZoomID         string `json:"meeting_id"`
 	ZoomPWD        string `json:"meeting_pwd"`
 }
@@ -27,6 +30,16 @@ func New(organization string, id string, pwd string) *Zoom {
 		ZoomID:         id,
 		ZoomPWD:        pwd,
 	}
+}
+
+func Parse(input string) *Zoom {
+	parts := strings.Fields(input)
+
+	if !strings.HasPrefix(input, "#") && len(parts) > 3 {
+		return New(parts[1], parts[2], parts[3])
+	}
+
+	return nil
 }
 
 func (z Zoom) Classification() string {

@@ -6,9 +6,9 @@ import (
 	"os"
 	"testing"
 
+	"github.com/dotariel/denim/bluejeans"
 	"github.com/dotariel/denim/hangouts"
 	"github.com/dotariel/denim/zoom"
-	"github.com/dotariel/denim/bluejeans"
 	vcard "github.com/emersion/go-vcard"
 
 	"github.com/stretchr/testify/assert"
@@ -69,7 +69,9 @@ func TestLoad(t *testing.T) {
 		{description: "extra columns", input: "MORE THAN TWO COLUMNS\n", file: "rooms", expected: 1},
 		{description: "multiple", input: "ABC 12345\nXYZ 9823", file: "rooms", expected: 2},
 		{description: "empty lines", input: "\nABC 12345\n\nXYZ 9823", file: "rooms", expected: 2},
-		{description: "single", input: "ABC 12345\n", file: "hangouts", expected: 1},
+		{description: "single", input: "ABC 12345\n", file: "rooms", expected: 1},
+		{description: "hangouts", input: "ABC 12345\n", file: "hangouts", expected: 1},
+		{description: "zoom", input: "ABC acme 12345 abcdef\n", file: "zoom", expected: 1},
 	}
 
 	for _, tt := range testCases {

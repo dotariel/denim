@@ -3,6 +3,7 @@ package bluejeans
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	base32 "github.com/manifoldco/go-base32"
 )
@@ -37,6 +38,16 @@ func New(id string) *Meeting {
 		RolePasscode:   "",
 		ReleaseChannel: "live",
 	}
+}
+
+func Parse(input string) *Meeting {
+	parts := strings.Fields(input)
+
+	if !strings.HasPrefix(input, "#") && len(parts) > 1 {
+		return New(parts[1])
+	}
+
+	return nil
 }
 
 func (m Meeting) Classification() string {

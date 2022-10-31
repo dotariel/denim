@@ -26,6 +26,32 @@ var testCases = []struct {
 	},
 }
 
+func TestParse(t *testing.T) {
+	testCases := []struct {
+		input    string
+		expected *Zoom
+	}{
+		{
+			input: "NAME	org 12345678	abcdefghasdfwefijsdfsd",
+			expected: &Zoom{
+				ContextVersion: ContextVersion,
+				Organization:   "org",
+				ZoomID:         "12345678",
+				ZoomPWD:        "abcdefghasdfwefijsdfsd",
+			},
+		},
+		{
+			input:    "# NAME	org 12345678	abcdefghasdfwefijsdfsd",
+			expected: nil,
+		},
+	}
+
+	for _, tc := range testCases {
+		z := Parse(tc.input)
+		assert.Equal(t, z, tc.expected)
+	}
+}
+
 func TestID(t *testing.T) {
 	assert.Equal(t, "12345", New("org", "12345", "abcdef").ID())
 }

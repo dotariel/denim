@@ -35,6 +35,33 @@ var testCases = []struct {
 	},
 }
 
+func TestParse(t *testing.T) {
+	testCases := []struct {
+		input    string
+		expected *Meeting
+	}{
+		{
+			input: "NAME	12345678",
+			expected: &Meeting{
+				ContextVersion: ContextVersion,
+				MeetingAPI:     MeetingAPI,
+				MeetingID:      "12345678",
+				RolePasscode:   "",
+				ReleaseChannel: "live",
+			},
+		},
+		{
+			input:    "# NAME	12345678",
+			expected: nil,
+		},
+	}
+
+	for _, tc := range testCases {
+		z := Parse(tc.input)
+		assert.Equal(t, z, tc.expected)
+	}
+}
+
 func TestID(t *testing.T) {
 	assert.Equal(t, "12345", New("12345").ID())
 }
