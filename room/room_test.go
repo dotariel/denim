@@ -9,6 +9,7 @@ import (
 	"github.com/dotariel/denim/bluejeans"
 	"github.com/dotariel/denim/hangouts"
 	"github.com/dotariel/denim/zoom"
+	"github.com/dotariel/denim/slack"
 	vcard "github.com/emersion/go-vcard"
 
 	"github.com/stretchr/testify/assert"
@@ -72,6 +73,7 @@ func TestLoad(t *testing.T) {
 		{description: "single", input: "ABC 12345\n", file: "rooms", expected: 1},
 		{description: "hangouts", input: "ABC 12345\n", file: "hangouts", expected: 1},
 		{description: "zoom", input: "ABC acme 12345 abcdef\n", file: "zoom", expected: 1},
+		{description: "slack", input: "ABC 12345 abcdef\n", file: "slack", expected: 1},
 	}
 
 	for _, tt := range testCases {
@@ -156,6 +158,7 @@ func TestExport(t *testing.T) {
 				{Session: bluejeans.New("56789"), Name: "bar_1"},
 				{Session: hangouts.New("56789"), Name: "hng_1"},
 				{Session: zoom.New("org", "67890", "___"), Name: "zoom_1"},
+				{Session: slack.New("67890", "___"), Name: "slack_1"},
 			},
 			prefix:   "foo-",
 			legacy:   false,
