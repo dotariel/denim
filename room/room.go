@@ -11,6 +11,7 @@ import (
 	"github.com/dotariel/denim/bluejeans"
 	"github.com/dotariel/denim/hangouts"
 	"github.com/dotariel/denim/zoom"
+	"github.com/dotariel/denim/slack"
 	vcard "github.com/emersion/go-vcard"
 )
 
@@ -21,6 +22,7 @@ var (
 	bluejeansSource string
 	hangoutsSource  string
 	zoomSource      string
+	slackSource      string
 )
 
 // Room wraps a meeting and provides a name to associate with it.
@@ -38,10 +40,12 @@ func Load() error {
 	bluejeansSource = resolveSource("rooms")
 	hangoutsSource = resolveSource("hangouts")
 	zoomSource = resolveSource("zoom")
+	slackSource = resolveSource("slack")
 
 	loadFromFile(bluejeansSource, bluejeans.Parse)
 	loadFromFile(hangoutsSource, hangouts.Parse)
 	loadFromFile(zoomSource, zoom.Parse)
+	loadFromFile(slackSource, slack.Parse)
 
 	return nil
 }
