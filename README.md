@@ -16,16 +16,18 @@ Denim will look for room definition files in the following locations and order:
 Room definitions are managed in separate files:
 
 - BlueJeans - `rooms`
-- Hangouts - `hangouts`
-- Zoom - `zoom`
+- Zoom      - `zoom`
+- Slack     - `slack`
+- Hangouts  - `hangouts` DEPRECATED
 
 For example:
 
 ```
 $DENIM_HOME
-├── hangouts
 └── rooms
 └── zoom
+└── slack
+├── hangouts
 ```
 
 ### File Structure
@@ -43,6 +45,18 @@ MY_AWESOME_ROOM   123445578
 ```
 
 **NOTE**: Room names are not case-sensitive.
+**NOTE**: Different room types require different configuration.
+
+### Configuration
+
+Example config for each type:
+
+```
+: cat ~/.denim/zoom
+zoom1 organization meetingId password
+: cat ~/.denim/slack
+slack1 team password
+```
 
 ## Build
 
