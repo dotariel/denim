@@ -19,13 +19,13 @@ build:
 dist: test dist-linux dist-darwin dist-windows
 
 dist-linux:
-	@cd cmd && $(LINUX_ARGS) go get -u -d ./... && CGO_ENABLED=0 $(LINUX_ARGS) go build -o $(DIST_DIR)/$(BINARY)_linux_amd64
+	@cd cmd && $(LINUX_ARGS) go get -u -d ./... && CGO_ENABLED=0 $(LINUX_ARGS) go build -o $(DIST_DIR)/$(BINARY)_linux_amd64 $(LDFLAGS)
 
 dist-darwin:
-	@cd cmd && $(DARWIN_ARGS) go get -u -d ./... && CGO_ENABLED=0 $(DARWIN_ARGS) go build -o $(DIST_DIR)/$(BINARY)_darwin_amd64
+	@cd cmd && $(DARWIN_ARGS) go get -u -d ./... && CGO_ENABLED=0 $(DARWIN_ARGS) go build -o $(DIST_DIR)/$(BINARY)_darwin_amd64 $(LDFLAGS)
 
 dist-windows:
-	@cd cmd && $(WINDOWS_ARGS) go get -u -d ./... && CGO_ENABLED=0 $(WINDOWS_ARGS) go build -o $(DIST_DIR)/$(BINARY)_windows_amd64.exe
+	@cd cmd && $(WINDOWS_ARGS) go get -u -d ./... && CGO_ENABLED=0 $(WINDOWS_ARGS) go build -o $(DIST_DIR)/$(BINARY)_windows_amd64.exe $(LDFLAGS)
 
 dep:
 	@go get -v -u -d ./...
