@@ -1,6 +1,6 @@
 # denim
 
-Denim manages the use of persistent BlueJeans meetings, Google Hangouts, and Zoom Calls as named rooms.
+Denim manages the use of persistent BlueJeans meetings, Slack huddles, Zoom calls, and Google Hangouts as named rooms.
 
 ![build](https://github.com/dotariel/denim/actions/workflows/main.yml/badge.svg)
 [![Go Report Card](https://goreportcard.com/badge/github.com/dotariel/denim)](https://goreportcard.com/report/github.com/dotariel/denim)
@@ -16,9 +16,9 @@ Denim will look for room definition files in the following locations and order:
 Room definitions are managed in separate files:
 
 - BlueJeans - `rooms`
-- Zoom      - `zoom`
-- Slack     - `slack`
-- Hangouts  - `hangouts` DEPRECATED
+- Zoom - `zoom`
+- Slack - `slack`
+- Hangouts - `hangouts` DEPRECATED
 
 For example:
 
