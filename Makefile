@@ -14,33 +14,33 @@ WINDOWS_ARGS=GOOS=windows
 default: dist
 
 build:
-	@cd cmd && go build -a -o $(OUTPUT_DIR)/$(BINARY) $(LDFLAGS)
+	@cd src && go build -a -o $(OUTPUT_DIR)/$(BINARY) $(LDFLAGS)
 
 dist: test dist-linux dist-darwin dist-windows
 
 dist-linux:
-	@cd cmd && $(LINUX_ARGS) go get -u -d ./... && CGO_ENABLED=0 $(LINUX_ARGS) go build -o $(DIST_DIR)/$(BINARY)_linux_amd64 $(LDFLAGS)
+	@cd src && $(LINUX_ARGS) go get -u -d ./... && CGO_ENABLED=0 $(LINUX_ARGS) go build -o $(DIST_DIR)/$(BINARY)_linux_amd64 $(LDFLAGS)
 
 dist-darwin:
-	@cd cmd && $(DARWIN_ARGS) go get -u -d ./... && CGO_ENABLED=0 $(DARWIN_ARGS) go build -o $(DIST_DIR)/$(BINARY)_darwin_amd64 $(LDFLAGS)
+	@cd src && $(DARWIN_ARGS) go get -u -d ./... && CGO_ENABLED=0 $(DARWIN_ARGS) go build -o $(DIST_DIR)/$(BINARY)_darwin_amd64 $(LDFLAGS)
 
 dist-windows:
-	@cd cmd && $(WINDOWS_ARGS) go get -u -d ./... && CGO_ENABLED=0 $(WINDOWS_ARGS) go build -o $(DIST_DIR)/$(BINARY)_windows_amd64.exe $(LDFLAGS)
+	@cd src && $(WINDOWS_ARGS) go get -u -d ./... && CGO_ENABLED=0 $(WINDOWS_ARGS) go build -o $(DIST_DIR)/$(BINARY)_windows_amd64.exe $(LDFLAGS)
 
 dep:
-	@go get -v -u -d ./...
+	@cd src && go get -v -u -d ./...
 
 dep-test:
-	@go get ./...
+	@cd src && go get ./...
 
 install: dep
-	@cd cmd && go build -a -o $(GOPATH)/bin/$(BINARY) $(LDFLAGS)
+	@cd src && go build -a -o $(GOPATH)/bin/$(BINARY) $(LDFLAGS)
 
 clean:
 	@find $(PROJECT_DIR) -name '$(BINARY)[-?][a-zA-Z0-9]*[-?][a-zA-Z0-9]*' -delete
 	@rm -fr $(OUTPUT_DIR)
 
 test: dep-test
-	@go test -v -coverprofile=coverage.txt -covermode=atomic ./...
+	@cd src && go test -v -coverprofile=coverage.txt -covermode=atomic ./...
 
 .PHONY: all
