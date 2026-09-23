@@ -20,7 +20,7 @@ func validateSource(cmd *cobra.Command, args []string) error {
 		msg = msg + "  - $HOME/.denim/zoom\n"
 		msg = msg + "  - $DENIM_HOME/zoom\n"
 
-		return fmt.Errorf(msg)
+		return fmt.Errorf("%s", msg)
 	}
 	return nil
 }
