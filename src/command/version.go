@@ -13,8 +13,7 @@ func Version() *cobra.Command {
 		Use:   "version",
 		Short: "display version information",
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Printf("denim v%s (%s)", app.Version, app.BuildDate)
-			return
+			fmt.Fprintf(cmd.OutOrStdout(), "denim v%s (%s)\n", app.Version, app.BuildDate)
 		},
 	}
 }

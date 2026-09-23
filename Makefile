@@ -2,11 +2,12 @@ PROJECT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 BINARY=denim
 OUTPUT_DIR=$(PROJECT_DIR)/gen
 DIST_DIR=$(OUTPUT_DIR)/dist
-PROJECT_VERSION:=$(shell cat $(PROJECT_DIR)/VERSION | tr -d '\n')
-PROJECT_COMMIT:=$(shell git -C $(PROJECT_DIR) rev-parse --short HEAD)
-PROJECT_BUILD_VERSION:=$(PROJECT_VERSION).$(PROJECT_COMMIT)
-PROJECT_BUILD_DATE="$(shell date -u +%FT%T.000Z)"
-LDFLAGS=-ldflags=all="-X github.com/dotariel/denim/app.Version=$(PROJECT_BUILD_VERSION) -X github.com/dotariel/denim/app.BuildDate=$(PROJECT_BUILD_DATE)"
+VERSION:=$(shell cat $(PROJECT_DIR)/VERSION | tr -d '\n')
+SHORT_SHA:=$(shell git -C $(PROJECT_DIR) rev-parse --short HEAD)
+BUILD_DATE:=$(shell git -C $(PROJECT_DIR) log -1 --format=%cI)
+BUILD_VERSION?=$(VERSION)-dev+$(SHORT_SHA)
+LDFLAGS=-ldflags=all="-X github.com/dotariel/denim/app.Version=$(BUILD_VERSION) -X github.com/dotariel/denim/app.BuildDate=$(BUILD_DATE)"
+BUILD_FLAGS=-trimpath -buildvcs=false
 LINUX_ARGS:=GOOS=linux
 DARWIN_ARGS:=GOOS=darwin
 WINDOWS_ARGS=GOOS=windows
@@ -22,7 +23,8 @@ dist-linux:
 	@cd src && $(LINUX_ARGS) go get -u -d ./... && CGO_ENABLED=0 $(LINUX_ARGS) go build -o $(DIST_DIR)/$(BINARY)_linux_amd64 $(LDFLAGS)
 
 dist-darwin:
-	@cd src && $(DARWIN_ARGS) go get -u -d ./... && CGO_ENABLED=0 $(DARWIN_ARGS) go build -o $(DIST_DIR)/$(BINARY)_darwin_amd64 $(LDFLAGS)
+	@cd src && CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o $(DIST_DIR)/$(BINARY)_darwin_amd64 $(BUILD_FLAGS) $(LDFLAGS)
+	@cd src && CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -o $(DIST_DIR)/$(BINARY)_darwin_arm64 $(BUILD_FLAGS) $(LDFLAGS)
 
 dist-windows:
 	@cd src && $(WINDOWS_ARGS) go get -u -d ./... && CGO_ENABLED=0 $(WINDOWS_ARGS) go build -o $(DIST_DIR)/$(BINARY)_windows_amd64.exe $(LDFLAGS)
