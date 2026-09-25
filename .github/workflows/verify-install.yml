@@ -1,0 +1,57 @@
+name: Verify install
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: "Version to verify, e.g. 0.2.0 (no leading v)"
+        required: true
+        type: string
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to verify, e.g. 0.2.0 (no leading v)"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  intel:
+    runs-on: macos-15-intel
+    steps:
+      - name: Tap, install, style, audit and test the fully-qualified formula
+        env:
+          VERSION: ${{ inputs.version }}
+          TAP: ${{ github.repository }}
+          TAP_URL: ${{ github.server_url }}/${{ github.repository }}
+        run: |
+          if ! printf '%s' "$VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "::error::version '$VERSION' is not X.Y.Z"
+            exit 2
+          fi
+
+          ARCH="$(uname -m)"
+          if [ "$ARCH" != "x86_64" ]; then
+            echo "::error::expected an Intel (x86_64) runner, got '$ARCH'"
+            exit 1
+          fi
+
+          brew tap "$TAP" "$TAP_URL"
+          brew install "$TAP/denim"
+          brew test "$TAP/denim"
+          brew style "$TAP/denim"
+          brew audit --strict "$TAP/denim"
+
+          INSTALLED_BIN="$(brew --prefix)/bin/denim"
+          ACTUAL_VERSION_OUT="$("$INSTALLED_BIN" version)"
+          case "$ACTUAL_VERSION_OUT" in
+            "denim v${VERSION} ("*) ;;
+            *)
+              echo "::error::expected output starting with 'denim v${VERSION} (', got '$ACTUAL_VERSION_OUT'"
+              exit 1
+              ;;
+          esac
+
+          echo "verify-install: PASS: denim v${VERSION} installed and verified on Intel"
