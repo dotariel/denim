@@ -40,8 +40,14 @@ mkdir -p "$RELEASE_DIR"
 for pair in darwin_amd64 darwin_arm64 linux_amd64 linux_arm64; do
   cp "$DIST_DIR/denim_${pair}" "$RELEASE_DIR/denim"
   chmod 0755 "$RELEASE_DIR/denim"
+  # Compress via a separate `gzip -n` rather than tar's own -z: tar's --mtime
+  # only stamps the archive MEMBER's timestamp, but its -z shortcut still lets
+  # gzip stamp the *outer* gzip header's MTIME field with the current wall
+  # clock, which alone defeats reproducibility across two otherwise-identical
+  # runs. `gzip -n` (--no-name) omits both the original filename and the
+  # timestamp from that header.
   "$TAR_BIN" -C "$RELEASE_DIR" --sort=name --mtime="$MTIME" --owner=0 --group=0 --numeric-owner \
-    -czf "$RELEASE_DIR/denim_${pair}.tar.gz" denim
+    -cf - denim | gzip -n > "$RELEASE_DIR/denim_${pair}.tar.gz"
   rm "$RELEASE_DIR/denim"
 done
 
