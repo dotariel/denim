@@ -2,10 +2,9 @@ PROJECT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 BINARY=denim
 OUTPUT_DIR=$(PROJECT_DIR)/gen
 DIST_DIR=$(OUTPUT_DIR)/dist
-VERSION:=$(shell cat $(PROJECT_DIR)/VERSION | tr -d '\n')
-SHORT_SHA:=$(shell git -C $(PROJECT_DIR) rev-parse --short HEAD)
+GIT_DESCRIBE:=$(shell git -C $(PROJECT_DIR) describe --tags --always --dirty)
 BUILD_DATE:=$(shell git -C $(PROJECT_DIR) log -1 --format=%cI)
-BUILD_VERSION?=$(VERSION)-dev+$(SHORT_SHA)
+BUILD_VERSION?=$(GIT_DESCRIBE:v%=%)
 LDFLAGS=-ldflags=all="-X github.com/dotariel/denim/app.Version=$(BUILD_VERSION) -X github.com/dotariel/denim/app.BuildDate=$(BUILD_DATE)"
 BUILD_FLAGS=-trimpath -buildvcs=false
 
