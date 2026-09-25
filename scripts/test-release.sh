@@ -37,6 +37,10 @@ pass_case() {
   echo "PASS: $1"
 }
 
+file_mtime() {
+  stat -f %m "$1" 2>/dev/null || stat -c %Y "$1"
+}
+
 # Globals set by setup_fixture, read by run_release and the case bodies.
 CASE_DIR=""
 REMOTE_GIT=""
@@ -146,6 +150,11 @@ setup_fixture() {
   local fake_bin="$case_dir/bin"
 
   git init -q --bare "$remote_git"
+  # A developer machine's global core.hooksPath (see EMPTY_HOOKS_DIR above)
+  # would otherwise shadow this bare repo's own hooks/ directory too — reset
+  # it to the repo's real hooks dir so a fixture-installed pre-receive hook
+  # (push-fails-twice) actually fires.
+  git -C "$remote_git" config core.hooksPath "$remote_git/hooks"
   mkdir -p "$fake_gh_dir" "$fake_bin"
   write_fake_gh "$fake_bin"
 
@@ -203,18 +212,41 @@ run_release() {
   )
 }
 
-case_happy_path() {
-  local name="happy-path"
-  setup_fixture "$name"
-  local pre_sha
-  pre_sha="$(git -C "$WORK" rev-parse HEAD)"
+# ensure_happy_path_done — runs the happy-path fixture + release exactly once
+# per test-release.sh invocation (memoized), so `published-refuses` can reuse
+# happy-path's fixture state per its spec ("after happy-path's fixture
+# state, re-run with the same version") regardless of which cases were
+# requested on the command line. Restores CASE_DIR/REMOTE_GIT/WORK/
+# FAKE_GH_DIR/FAKE_BIN to the happy-path fixture on every call.
+HAPPY_PATH_DONE=0
+HP_CASE_DIR="" HP_REMOTE_GIT="" HP_WORK="" HP_FAKE_GH_DIR="" HP_FAKE_BIN="" HP_PRE_SHA=""
+
+ensure_happy_path_done() {
+  if [ "$HAPPY_PATH_DONE" -eq 1 ]; then
+    CASE_DIR="$HP_CASE_DIR"; REMOTE_GIT="$HP_REMOTE_GIT"; WORK="$HP_WORK"
+    FAKE_GH_DIR="$HP_FAKE_GH_DIR"; FAKE_BIN="$HP_FAKE_BIN"
+    return 0
+  fi
+
+  setup_fixture "happy-path"
+  HP_PRE_SHA="$(git -C "$WORK" rev-parse HEAD)"
 
   local out status
   set +e
   out="$(run_release INPUT_VERSION=0.2.0 2>&1)"
   status=$?
   set -e
-  [ "$status" -eq 0 ] || fail_case "$name" "release.sh run exited $status: $out"
+  [ "$status" -eq 0 ] || fail_case "happy-path" "release.sh run exited $status: $out"
+
+  HP_CASE_DIR="$CASE_DIR"; HP_REMOTE_GIT="$REMOTE_GIT"; HP_WORK="$WORK"
+  HP_FAKE_GH_DIR="$FAKE_GH_DIR"; HP_FAKE_BIN="$FAKE_BIN"
+  HAPPY_PATH_DONE=1
+}
+
+case_happy_path() {
+  local name="happy-path"
+  ensure_happy_path_done
+  local pre_sha="$HP_PRE_SHA"
 
   local state
   state="$(cat "$FAKE_GH_DIR/v0.2.0.state" 2>/dev/null || true)"
@@ -348,7 +380,229 @@ case_invalid_input() {
   pass_case "$name"
 }
 
-ALL_CASES=(happy-path next-version-auto invalid-input)
+case_published_refuses() {
+  local name="published-refuses"
+  ensure_happy_path_done
+
+  local pre_master_sha
+  pre_master_sha="$(git --git-dir="$REMOTE_GIT" rev-parse master)"
+  local pre_create_count
+  pre_create_count="$(grep -c 'release create' "$FAKE_GH_DIR/calls.log" 2>/dev/null || true)"
+  local bin_mtime_before
+  bin_mtime_before="$(file_mtime "$WORK/gen/dist/denim_darwin_amd64")"
+
+  local out status
+  set +e
+  out="$(run_release INPUT_VERSION=0.2.0 2>&1)"
+  status=$?
+  set -e
+  [ "$status" -ne 0 ] || fail_case "$name" "re-run of an already-published version unexpectedly succeeded"
+  printf '%s\n' "$out" | grep -q 'already has a published release' || fail_case "$name" "expected 'already has a published release' in output, got: $out"
+
+  local post_master_sha
+  post_master_sha="$(git --git-dir="$REMOTE_GIT" rev-parse master)"
+  [ "$post_master_sha" = "$pre_master_sha" ] || fail_case "$name" "remote master sha changed on a refused re-run"
+
+  local post_create_count
+  post_create_count="$(grep -c 'release create' "$FAKE_GH_DIR/calls.log" 2>/dev/null || true)"
+  [ "${post_create_count:-0}" -eq "${pre_create_count:-0}" ] || fail_case "$name" "unexpected new 'release create' call on a refused re-run"
+
+  local bin_mtime_after
+  bin_mtime_after="$(file_mtime "$WORK/gen/dist/denim_darwin_amd64")"
+  [ "$bin_mtime_before" = "$bin_mtime_after" ] || fail_case "$name" "gen/dist was rebuilt on a re-run that should have been refused before build"
+
+  pass_case "$name"
+}
+
+case_draft_cleanup() {
+  local name="draft-cleanup"
+  setup_fixture "$name"
+
+  local out status
+  set +e
+  out="$(run_release INPUT_VERSION=0.2.0 FAKE_GH_CREATE_FAIL_AFTER_DRAFT=1 2>&1)"
+  status=$?
+  set -e
+  [ "$status" -ne 0 ] || fail_case "$name" "first run (forced draft failure) unexpectedly succeeded"
+  local state
+  state="$(cat "$FAKE_GH_DIR/v0.2.0.state" 2>/dev/null || true)"
+  [ "$state" = "draft" ] || fail_case "$name" "expected draft state after a forced mid-upload failure, got '$state'"
+
+  set +e
+  out="$(run_release INPUT_VERSION=0.2.0 2>&1)"
+  status=$?
+  set -e
+  [ "$status" -eq 0 ] || fail_case "$name" "second run (draft cleanup) exited $status: $out"
+
+  grep -qF 'release delete v0.2.0 --repo acme/denim-test --cleanup-tag --yes' "$FAKE_GH_DIR/calls.log" || fail_case "$name" "calls.log missing the expected release delete invocation"
+
+  local delete_line second_create_line
+  delete_line="$(grep -n 'release delete v0.2.0' "$FAKE_GH_DIR/calls.log" | head -1 | cut -d: -f1)"
+  second_create_line="$(grep -n 'release create v0.2.0' "$FAKE_GH_DIR/calls.log" | tail -1 | cut -d: -f1)"
+  [ -n "$delete_line" ] && [ -n "$second_create_line" ] && [ "$delete_line" -lt "$second_create_line" ] \
+    || fail_case "$name" "expected release delete before the second release create in calls.log"
+
+  state="$(cat "$FAKE_GH_DIR/v0.2.0.state")"
+  [ "$state" = "published" ] || fail_case "$name" "expected final state published, got '$state'"
+
+  local asset_count
+  asset_count="$(find "$FAKE_GH_DIR/v0.2.0" -type f | wc -l | tr -d ' ')"
+  [ "$asset_count" -eq 6 ] || fail_case "$name" "expected 6 assets in final published release, got $asset_count"
+
+  pass_case "$name"
+}
+
+case_tag_without_release() {
+  local name="tag-without-release"
+  setup_fixture "$name"
+
+  (
+    cd "$WORK"
+    git tag v0.2.0
+    git push -q origin v0.2.0
+  )
+
+  local out status
+  set +e
+  out="$(run_release INPUT_VERSION=0.2.0 2>&1)"
+  status=$?
+  set -e
+  [ "$status" -ne 0 ] || fail_case "$name" "run unexpectedly succeeded with an existing tag and no release"
+  printf '%s\n' "$out" | grep -q 'exists without a release' || fail_case "$name" "expected 'exists without a release' in output, got: $out"
+
+  local create_count
+  create_count="$(grep -c 'release create' "$FAKE_GH_DIR/calls.log" 2>/dev/null || true)"
+  [ "${create_count:-0}" -eq 0 ] || fail_case "$name" "unexpected release create call: ${create_count:-0}"
+  [ ! -d "$WORK/gen/release" ] || fail_case "$name" "gen/release exists after a guard failure"
+
+  pass_case "$name"
+}
+
+case_gh_error_fails_closed() {
+  local name="gh-error-fails-closed"
+  setup_fixture "$name"
+
+  local out status
+  set +e
+  out="$(run_release INPUT_VERSION=0.2.0 FAKE_GH_VIEW_ERROR=1 2>&1)"
+  status=$?
+  set -e
+  [ "$status" -ne 0 ] || fail_case "$name" "run unexpectedly succeeded with a forced gh view error"
+  printf '%s\n' "$out" | grep -q 'HTTP 502' || fail_case "$name" "expected 'HTTP 502' in output, got: $out"
+
+  local create_count
+  create_count="$(grep -c 'release create' "$FAKE_GH_DIR/calls.log" 2>/dev/null || true)"
+  [ "${create_count:-0}" -eq 0 ] || fail_case "$name" "unexpected release create call: ${create_count:-0}"
+
+  pass_case "$name"
+}
+
+case_push_retry_rebase() {
+  local name="push-retry-rebase"
+  setup_fixture "$name"
+
+  local second_clone="$CASE_DIR/second-clone"
+  git clone -q "$REMOTE_GIT" "$second_clone"
+  (
+    cd "$second_clone"
+    git config core.hooksPath "$EMPTY_HOOKS_DIR"
+    git config user.name "denim-test-second-clone"
+    git config user.email "second-clone@example.com"
+    echo "unrelated fixture change" >> README.md
+    git add -A
+    git commit -q -m "fixture: unrelated commit pushed from a second clone"
+    git push -q origin master
+  )
+  local unrelated_sha
+  unrelated_sha="$(git --git-dir="$REMOTE_GIT" rev-parse master)"
+
+  local out status
+  set +e
+  out="$(run_release INPUT_VERSION=0.2.0 2>&1)"
+  status=$?
+  set -e
+  [ "$status" -eq 0 ] || fail_case "$name" "run exited $status when a single rebase retry should have resolved the rejected push: $out"
+
+  local new_master_sha parent_sha
+  new_master_sha="$(git --git-dir="$REMOTE_GIT" rev-parse master)"
+  parent_sha="$(git --git-dir="$REMOTE_GIT" rev-parse "${new_master_sha}^")"
+  [ "$parent_sha" = "$unrelated_sha" ] || fail_case "$name" "expected the formula commit's parent to be the unrelated commit ($unrelated_sha), got $parent_sha"
+
+  pass_case "$name"
+}
+
+case_push_fails_twice() {
+  local name="push-fails-twice"
+  setup_fixture "$name"
+
+  cat > "$REMOTE_GIT/hooks/pre-receive" <<'HOOK_EOF'
+#!/usr/bin/env bash
+while read -r oldrev newrev refname; do
+  if [ "$refname" = "refs/heads/master" ]; then
+    echo "rejected: master is protected in this fixture" >&2
+    exit 1
+  fi
+done
+exit 0
+HOOK_EOF
+  chmod 0755 "$REMOTE_GIT/hooks/pre-receive"
+
+  local out status
+  set +e
+  out="$(run_release INPUT_VERSION=0.2.0 2>&1)"
+  status=$?
+  set -e
+  [ "$status" -ne 0 ] || fail_case "$name" "run unexpectedly succeeded against a remote that rejects every push to master"
+
+  printf '%s\n' "$out" | grep -qF 'v0.2.0' || fail_case "$name" "expected 'v0.2.0' in output, got: $out"
+
+  local url_count sha_count
+  url_count="$(printf '%s\n' "$out" | grep -cE '/releases/download/v0\.2\.0/' || true)"
+  [ "${url_count:-0}" -eq 4 ] || fail_case "$name" "expected 4 release-download url lines in output, got ${url_count:-0}"
+
+  sha_count="$(printf '%s\n' "$out" | grep -cE '[0-9a-f]{64}' || true)"
+  [ "${sha_count:-0}" -eq 4 ] || fail_case "$name" "expected 4 sha256 lines in output, got ${sha_count:-0}"
+
+  printf '%s\n' "$out" | grep -qF 'by hand' || fail_case "$name" "expected 'by hand' in output"
+  printf '%s\n' "$out" | grep -qF 'immutable' || fail_case "$name" "expected 'immutable' in output"
+
+  pass_case "$name"
+}
+
+case_wrong_branch() {
+  local name="wrong-branch"
+  setup_fixture "$name"
+
+  (
+    cd "$WORK"
+    git checkout -q -b feature
+  )
+
+  local out status
+  set +e
+  out="$(run_release INPUT_VERSION=0.2.0 2>&1)"
+  status=$?
+  set -e
+  [ "$status" -ne 0 ] || fail_case "$name" "run unexpectedly succeeded on a branch other than RELEASE_BRANCH"
+  if [ -s "$FAKE_GH_DIR/calls.log" ]; then
+    fail_case "$name" "calls.log has entries even though the branch check should fail before any gh call: $(cat "$FAKE_GH_DIR/calls.log")"
+  fi
+
+  pass_case "$name"
+}
+
+ALL_CASES=(
+  happy-path
+  next-version-auto
+  invalid-input
+  published-refuses
+  draft-cleanup
+  tag-without-release
+  gh-error-fails-closed
+  push-retry-rebase
+  push-fails-twice
+  wrong-branch
+)
 
 main() {
   local requested=("$@")
@@ -361,6 +615,13 @@ main() {
       happy-path) case_happy_path ;;
       next-version-auto) case_next_version_auto ;;
       invalid-input) case_invalid_input ;;
+      published-refuses) case_published_refuses ;;
+      draft-cleanup) case_draft_cleanup ;;
+      tag-without-release) case_tag_without_release ;;
+      gh-error-fails-closed) case_gh_error_fails_closed ;;
+      push-retry-rebase) case_push_retry_rebase ;;
+      push-fails-twice) case_push_fails_twice ;;
+      wrong-branch) case_wrong_branch ;;
       *) echo "test-release: unknown case '$c'" >&2; exit 1 ;;
     esac
   done

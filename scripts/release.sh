@@ -68,9 +68,10 @@ cmd_next_version() {
   printf '%s.%s.%s\n' "$major" "$minor" "$((patch + 1))"
 }
 
-# cmd_guard <tag> — fail closed unless there is nothing published or tagged yet
-# for <tag>. Tracer shape (Task 1): any existing release (draft or published),
-# any existing tag, or any unexpected gh/git error stops the run.
+# cmd_guard <tag> — full D-12 guard. A published release fails the run before
+# building; a tag without a release fails before building; a leftover draft
+# (e.g. an asset upload failed mid `gh release create`) is deleted and the run
+# continues; any other gh/git error stops the run (fail closed).
 cmd_guard() {
   local tag="${1:?guard requires <tag>}"
   : "${GITHUB_REPOSITORY:?GITHUB_REPOSITORY required}"
@@ -82,23 +83,49 @@ cmd_guard() {
   set -e
 
   if [ "$view_status" -eq 0 ]; then
-    echo "::error::$tag already has a release (draft or published)" >&2
-    exit 1
-  fi
-  if ! printf '%s' "$view_out" | grep -q 'release not found'; then
-    echo "::error::cannot determine release state for $tag: $view_out" >&2
-    exit 1
+    case "$view_out" in
+      true)
+        echo "guard: deleting leftover draft release $tag"
+        "$GH" release delete "$tag" --repo "$GITHUB_REPOSITORY" --cleanup-tag --yes
+        ;;
+      false)
+        echo "::error::$tag already has a published release" >&2
+        exit 1
+        ;;
+      *)
+        echo "::error::cannot determine release state for $tag: unexpected isDraft output '$view_out'" >&2
+        exit 1
+        ;;
+    esac
+  else
+    if ! printf '%s' "$view_out" | grep -q 'release not found'; then
+      echo "::error::cannot determine release state for $tag: $view_out" >&2
+      exit 1
+    fi
+    # else: "release not found" — nothing to clean up, fall through.
   fi
 
-  if git ls-remote --exit-code --tags "$REMOTE" "refs/tags/$tag" >/dev/null 2>&1; then
+  local ls_status
+  set +e
+  git ls-remote --exit-code --tags "$REMOTE" "refs/tags/$tag" >/dev/null 2>&1
+  ls_status=$?
+  set -e
+
+  if [ "$ls_status" -eq 0 ]; then
     echo "::error::tag $tag exists without a release" >&2
     exit 1
+  elif [ "$ls_status" -ne 2 ]; then
+    echo "::error::cannot determine tag state for $tag (git ls-remote --exit-code exited $ls_status)" >&2
+    exit 1
   fi
+  # ls_status == 2: no such tag, clear to proceed.
 }
 
 # cmd_publish_formula <tag> <branch> — commit Formula/denim.rb (must already be
-# rendered/changed on disk) as github-actions[bot] and push it. Tracer shape
-# (Task 1): single push attempt, no retry, no force option of any kind.
+# rendered/changed on disk) as github-actions[bot] and push it (D-13). On a
+# rejected push, rebase onto the remote branch once (--rebase) and push again;
+# if that also fails, abort any rebase in progress and print everything needed
+# to apply the formula by hand. No force option of any kind, ever.
 cmd_publish_formula() {
   local tag="${1:?publish-formula requires <tag> <branch>}"
   local branch="${2:?publish-formula requires <tag> <branch>}"
@@ -113,7 +140,41 @@ cmd_publish_formula() {
 
   git add Formula/denim.rb
   git commit -q -m "chore(release): update Homebrew formula to $tag"
-  git push "$REMOTE" "HEAD:refs/heads/$branch"
+
+  local push_out
+  if push_out="$(git push "$REMOTE" "HEAD:refs/heads/$branch" 2>&1)"; then
+    return 0
+  fi
+  echo "$push_out" >&2
+  echo "publish-formula: push rejected — rebasing onto '$branch' once and retrying" >&2
+
+  local rebase_ok=1 rebase_out
+  if ! rebase_out="$(git pull --rebase "$REMOTE" "$branch" 2>&1)"; then
+    echo "$rebase_out" >&2
+    rebase_ok=0
+    git rebase --abort >/dev/null 2>&1 || true
+  fi
+
+  local push2_ok=1 push2_out
+  if [ "$rebase_ok" -eq 1 ]; then
+    if ! push2_out="$(git push "$REMOTE" "HEAD:refs/heads/$branch" 2>&1)"; then
+      echo "$push2_out" >&2
+      push2_ok=0
+    fi
+  fi
+
+  if [ "$rebase_ok" -eq 0 ] || [ "$push2_ok" -eq 0 ]; then
+    local version="${tag#v}"
+    {
+      echo "::error::push of the formula commit to '$branch' failed after one rebase retry"
+      echo "::error::version: $version ($tag)"
+      echo "::error::commit Formula/denim.rb by hand with these values:"
+      grep -E '(url|sha256) "' Formula/denim.rb | sed 's/^[[:space:]]*/::error::  /'
+      echo "::error::a re-run will refuse because $tag is already published"
+      echo "::error::a bad release can be deleted and re-cut by hand — immutable releases are off on this repo"
+    } >&2
+    exit 1
+  fi
 }
 
 # cmd_run — the full pipeline.
