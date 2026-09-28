@@ -6,23 +6,23 @@ class Denim < Formula
 
   on_macos do
     on_arm do
-      url "https://github.com/esumerfd/denim/releases/download/v0.2.0/denim_darwin_arm64.tar.gz"
-      sha256 "712c2821177184261f52accff8d9972ae002e6c7d770c1ebd44b37bb9b11eee4"
+      url "https://github.com/esumerfd/denim/releases/download/v0.1.11/denim_darwin_arm64.tar.gz"
+      sha256 "fe5779ef34e57000c7673da7b5617c6acc49f31eef3e87190b9eccf3efe0df01"
     end
     on_intel do
-      url "https://github.com/esumerfd/denim/releases/download/v0.2.0/denim_darwin_amd64.tar.gz"
-      sha256 "d18b74f36bc64e713bbd1a128924f1a1c14ba9a19e3c3849f1002c18ee73d0fa"
+      url "https://github.com/esumerfd/denim/releases/download/v0.1.11/denim_darwin_amd64.tar.gz"
+      sha256 "dad2a6f7339cc18347c25168274060d27e631f7e3b624447b56c5daf04ff3d7c"
     end
   end
 
   on_linux do
     on_arm do
-      url "https://github.com/esumerfd/denim/releases/download/v0.2.0/denim_linux_arm64.tar.gz"
-      sha256 "1c85afa22363780ab912e290a00aa2cb936baf3cf3b3f3728984ce24a2bda251"
+      url "https://github.com/esumerfd/denim/releases/download/v0.1.11/denim_linux_arm64.tar.gz"
+      sha256 "a4fe93c314774295ff7df61da70a0dcaa0313f1977c14dc2919fae3fa73de936"
     end
     on_intel do
-      url "https://github.com/esumerfd/denim/releases/download/v0.2.0/denim_linux_amd64.tar.gz"
-      sha256 "eb59b25d0225534b0252c9a76914298370280adfa9b1a414f96ee75632e65c5f"
+      url "https://github.com/esumerfd/denim/releases/download/v0.1.11/denim_linux_amd64.tar.gz"
+      sha256 "7135238146325b6d01fb5aedd1b5aa4d69f5fc6ebe1cac5185f6776bcf0055d0"
     end
   end
 
