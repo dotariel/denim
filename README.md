@@ -6,6 +6,38 @@ Denim manages the use of persistent BlueJeans meetings, Slack huddles, Zoom call
 [![Go Report Card](https://goreportcard.com/badge/github.com/dotariel/denim)](https://goreportcard.com/report/github.com/dotariel/denim)
 [![codecov](https://codecov.io/gh/dotariel/denim/branch/master/graph/badge.svg)](https://codecov.io/gh/dotariel/denim)
 
+## Install
+
+Denim is installed with Homebrew on macOS (Apple Silicon and Intel) and Linux (amd64 and arm64).
+
+The formula lives in this repository, so tap it with the explicit URL once:
+
+```
+$ brew tap esumerfd/denim https://github.com/esumerfd/denim
+```
+
+Then install using the fully-qualified name. Homebrew refuses a bare `brew install denim` from a tap it has not been told to trust.
+
+```
+$ brew install esumerfd/denim/denim
+$ denim version
+```
+
+To upgrade to the latest release:
+
+```
+$ brew update && brew upgrade denim
+```
+
+To remove it:
+
+```
+$ brew uninstall denim
+$ brew untap esumerfd/denim
+```
+
+Windows binaries are attached to each [GitHub release](https://github.com/esumerfd/denim/releases).
+
 ## Room Definitions
 
 Denim will look for room definition files in the following locations and order:
