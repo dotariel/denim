@@ -19,6 +19,7 @@ permissions:
 
 jobs:
   intel:
+    name: macOS Intel
     runs-on: macos-15-intel
     steps:
       - name: Tap, install, style, audit and test the fully-qualified formula
@@ -37,6 +38,11 @@ jobs:
             echo "::error::expected an Intel (x86_64) runner, got '$ARCH'"
             exit 1
           fi
+
+          # The runner image ships third-party taps (hashicorp/tap, aws/tap) whose
+          # formulae Homebrew reports as errors while loading taps. Remove every
+          # non-homebrew tap so the check runs against a clean Homebrew.
+          brew tap | grep -v '^homebrew/' | xargs -r -n1 brew untap --force
 
           brew tap "$TAP" "$TAP_URL"
           brew install "$TAP/denim"
