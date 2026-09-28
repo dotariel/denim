@@ -8,7 +8,7 @@ Denim manages the use of persistent BlueJeans meetings, Slack huddles, Zoom call
 
 ## Install
 
-Denim is installed with Homebrew on macOS (Apple Silicon and Intel) and Linux (amd64 and arm64).
+Denim is installed with Homebrew on macOS (arm64 and amd64) and Linux (arm64 and amd64).
 
 The formula lives in this repository, so tap it with the explicit URL once:
 

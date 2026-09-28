@@ -18,8 +18,8 @@ permissions:
   contents: read
 
 jobs:
-  intel:
-    name: macOS Intel
+  macos-amd64:
+    name: macOS amd64
     runs-on: macos-15-intel
     steps:
       - name: Tap, install, style, audit and test the fully-qualified formula
@@ -35,7 +35,7 @@ jobs:
 
           ARCH="$(uname -m)"
           if [ "$ARCH" != "x86_64" ]; then
-            echo "::error::expected an Intel (x86_64) runner, got '$ARCH'"
+            echo "::error::expected an amd64 (x86_64) runner, got '$ARCH'"
             exit 1
           fi
 
@@ -60,4 +60,4 @@ jobs:
               ;;
           esac
 
-          echo "verify-install: PASS: denim v${VERSION} installed and verified on Intel"
+          echo "verify-install: PASS: denim v${VERSION} installed and verified on macOS amd64"
