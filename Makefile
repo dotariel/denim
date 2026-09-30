@@ -33,7 +33,7 @@ dep-test:
 	@cd src && go mod download
 
 install: dep
-	@cd src && go build -a -o $(GOPATH)/bin/$(BINARY) $(BUILD_FLAGS) $(LDFLAGS)
+	@cd src && go build -a -o $(shell go env GOPATH)/bin/$(BINARY) $(BUILD_FLAGS) $(LDFLAGS)
 
 clean:
 	@find $(PROJECT_DIR) -name '$(BINARY)[-?][a-zA-Z0-9]*[-?][a-zA-Z0-9]*' -delete
