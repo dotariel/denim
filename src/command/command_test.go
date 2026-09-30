@@ -20,9 +20,9 @@ func TestValidateSource(t *testing.T) {
 		"  - $DENIM_HOME/zoom\n"
 
 	testCases := []struct {
-		description  string
+		description     string
 		createRoomsFile bool
-		expectError  bool
+		expectError     bool
 	}{
 		{
 			description:     "no room sources",

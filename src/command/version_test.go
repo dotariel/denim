@@ -30,17 +30,19 @@ func TestVersion(t *testing.T) {
 	}
 
 	for _, tt := range testCases {
-		origVersion, origBuildDate := app.Version, app.BuildDate
-		defer func() { app.Version, app.BuildDate = origVersion, origBuildDate }()
+		t.Run(tt.description, func(t *testing.T) {
+			origVersion, origBuildDate := app.Version, app.BuildDate
+			t.Cleanup(func() { app.Version, app.BuildDate = origVersion, origBuildDate })
 
-		app.Version = tt.version
-		app.BuildDate = tt.buildDate
+			app.Version = tt.version
+			app.BuildDate = tt.buildDate
 
-		cmd := Version()
-		buf := new(bytes.Buffer)
-		cmd.SetOut(buf)
-		cmd.Run(cmd, []string{})
+			cmd := Version()
+			buf := new(bytes.Buffer)
+			cmd.SetOut(buf)
+			cmd.Run(cmd, []string{})
 
-		assert.Equal(t, tt.expected, buf.String(), tt.description)
+			assert.Equal(t, tt.expected, buf.String())
+		})
 	}
 }
