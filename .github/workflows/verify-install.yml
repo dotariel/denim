@@ -22,6 +22,9 @@ jobs:
     name: macOS amd64
     runs-on: macos-15-intel
     steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
       - name: Tap, install, style, audit and test the fully-qualified formula
         env:
           VERSION: ${{ inputs.version }}
@@ -61,3 +64,9 @@ jobs:
           esac
 
           echo "verify-install: PASS: denim v${VERSION} installed and verified on macOS amd64"
+
+      - name: Upgrade from the previous release
+        env:
+          VERSION: ${{ inputs.version }}
+          TAP: ${{ github.repository }}
+        run: scripts/verify-upgrade.sh "$VERSION"
