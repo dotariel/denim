@@ -103,6 +103,18 @@ if [ "$LOCAL_INSTALL" -eq 1 ]; then
   ' "$FORMULA_FILE" > "$TMP_FORMULA"
   mv "$TMP_FORMULA" "$FORMULA_FILE"
 
+  # Every `url "..."` line must have been substituted to file://; a surviving
+  # https:// release URL means the awk substitution above missed an asset name
+  # (e.g. a renamed archive) and would otherwise fail later, opaquely, at
+  # `brew install`'s download step instead of here with a clear message.
+  # Match only `url "` lines — the `homepage "https://..."` line is expected
+  # to stay a github.com URL and must not trip this guard.
+  LEFTOVER_URLS="$(grep -E '^[[:space:]]*url "https://' "$FORMULA_FILE" || true)"
+  if [ -n "$LEFTOVER_URLS" ]; then
+    fail "local-install" "unsubstituted release URL(s) survived the file:// substitution:
+$LEFTOVER_URLS"
+  fi
+
   brew install "${FORMULA_NAME}"
   INSTALLED_BY_US=1
 
