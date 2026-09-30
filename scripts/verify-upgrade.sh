@@ -100,9 +100,19 @@ fi
 # "chore(release): update Homebrew formula to v<prev>" — a whole-subject
 # comparison, never a substring/prefix match, so a search for v0.2.1 can
 # never match a commit actually meant for v0.2.10.
+#
+# awk deliberately has NO `exit` after the first match: an early exit would
+# close awk's read end while `git log` may still be writing, and under
+# `set -o pipefail` the resulting SIGPIPE (128+13=141) on git log becomes
+# this whole command substitution's exit status even though awk itself
+# succeeded — tripping `set -e` and killing the script before the
+# `[ -z "$PREV_SHA" ]` check below ever runs. Reading to EOF and taking
+# just the first line in bash afterward (git log lists newest-first, so
+# the first match is already the newest) avoids the race entirely.
 EXPECTED_SUBJECT="chore(release): update Homebrew formula to v${PREV_VERSION}"
-PREV_SHA="$(git -C "$TAPDIR" log --format='%H%x09%s' -- Formula/denim.rb \
-  | awk -F'\t' -v want="$EXPECTED_SUBJECT" '$2 == want { print $1; exit }')"
+PREV_SHA_MATCHES="$(git -C "$TAPDIR" log --format='%H%x09%s' -- Formula/denim.rb \
+  | awk -F'\t' -v want="$EXPECTED_SUBJECT" '$2 == want { print $1 }')"
+PREV_SHA="${PREV_SHA_MATCHES%%$'\n'*}"
 if [ -z "$PREV_SHA" ]; then
   fail "no commit touching Formula/denim.rb has subject '${EXPECTED_SUBJECT}'"
 fi
