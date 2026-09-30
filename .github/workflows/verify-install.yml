@@ -18,18 +18,51 @@ permissions:
   contents: read
 
 jobs:
-  macos-amd64:
-    name: macOS amd64
-    runs-on: macos-15-intel
+  install:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: macOS arm64
+            runner: macos-latest
+            arch: arm64
+          - name: macOS amd64
+            runner: macos-15-intel
+            arch: x86_64
+          - name: Linux amd64
+            runner: ubuntu-24.04
+            arch: x86_64
+          - name: Linux arm64
+            runner: ubuntu-24.04-arm
+            arch: aarch64
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+
+      - name: Add Linuxbrew to PATH
+        if: runner.os == 'Linux'
+        run: |
+          echo "/home/linuxbrew/.linuxbrew/bin" >> "$GITHUB_PATH"
+          echo "/home/linuxbrew/.linuxbrew/sbin" >> "$GITHUB_PATH"
+
+      - name: Update Homebrew (required before evaluating the tap — see RESEARCH.md Pitfall 1)
+        if: runner.os == 'Linux'
+        run: |
+          # A cold Linuxbrew's own version resolution for a third-party tap
+          # formula silently corrupts to a placeholder ("64") until a real,
+          # unsuppressed `brew update` has run once (D-23). This must happen
+          # before anything taps or evaluates the denim formula below.
+          brew update
 
       - name: Tap, install, style, audit and test the fully-qualified formula
         env:
           VERSION: ${{ inputs.version }}
           TAP: ${{ github.repository }}
           TAP_URL: ${{ github.server_url }}/${{ github.repository }}
+          EXPECTED_ARCH: ${{ matrix.arch }}
         run: |
           if ! printf '%s' "$VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
             echo "::error::version '$VERSION' is not X.Y.Z"
@@ -37,14 +70,15 @@ jobs:
           fi
 
           ARCH="$(uname -m)"
-          if [ "$ARCH" != "x86_64" ]; then
-            echo "::error::expected an amd64 (x86_64) runner, got '$ARCH'"
+          if [ "$ARCH" != "$EXPECTED_ARCH" ]; then
+            echo "::error::expected a $EXPECTED_ARCH runner, got '$ARCH'"
             exit 1
           fi
 
-          # The runner image ships third-party taps (hashicorp/tap, aws/tap) whose
-          # formulae Homebrew reports as errors while loading taps. Remove every
-          # non-homebrew tap so the check runs against a clean Homebrew.
+          # Some runner images ship third-party taps (hashicorp/tap, aws/tap on
+          # macOS) whose formulae Homebrew reports as errors while loading taps.
+          # Remove every non-homebrew tap so the check runs against a clean
+          # Homebrew on every runner (D-12) — a no-op where there are none.
           brew tap | grep -v '^homebrew/' | xargs -r -n1 brew untap --force
 
           brew tap "$TAP" "$TAP_URL"
@@ -63,7 +97,7 @@ jobs:
               ;;
           esac
 
-          echo "verify-install: PASS: denim v${VERSION} installed and verified on macOS amd64"
+          echo "verify-install: PASS: denim v${VERSION} installed and verified on ${{ matrix.name }}"
 
       - name: Upgrade from the previous release
         env:
