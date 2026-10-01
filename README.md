@@ -2,9 +2,53 @@
 
 Denim manages the use of persistent BlueJeans meetings, Slack huddles, Zoom calls, and Google Hangouts as named rooms.
 
-![build](https://github.com/dotariel/denim/actions/workflows/main.yml/badge.svg)
-[![Go Report Card](https://goreportcard.com/badge/github.com/dotariel/denim)](https://goreportcard.com/report/github.com/dotariel/denim)
-[![codecov](https://codecov.io/gh/dotariel/denim/branch/master/graph/badge.svg)](https://codecov.io/gh/dotariel/denim)
+![build](https://github.com/esumerfd/denim/actions/workflows/main.yml/badge.svg)
+
+## Install
+
+Denim is installed with Homebrew on macOS (arm64 and amd64) and Linux (arm64 and amd64).
+
+The formula lives in this repository, so tap it with the explicit URL once:
+
+```
+$ brew tap esumerfd/denim https://github.com/esumerfd/denim
+```
+
+Then install using the fully-qualified name. Homebrew refuses a bare `brew install denim` from a tap it has not been told to trust.
+
+```
+$ brew install esumerfd/denim/denim
+$ denim version
+```
+
+To upgrade to the latest release:
+
+```
+$ brew update && brew upgrade esumerfd/denim/denim
+```
+
+To remove it:
+
+```
+$ brew uninstall esumerfd/denim/denim
+$ brew untap esumerfd/denim
+```
+
+Windows binaries are attached to each [GitHub release](https://github.com/esumerfd/denim/releases).
+
+## macOS Gatekeeper
+
+Installing with Homebrew needs no extra step — Homebrew downloads binaries with
+`curl`, which does not set the macOS quarantine flag.
+
+If you instead download a `.tar.gz` directly from the
+[releases page](https://github.com/esumerfd/denim/releases), the extracted
+`denim` binary may be blocked by Gatekeeper the first time you run it (it is
+unsigned). Clear the flag with:
+
+```
+$ xattr -d com.apple.quarantine denim
+```
 
 ## Room Definitions
 
@@ -60,10 +104,10 @@ slack1 team password
 
 ## Build
 
-To build and run denim locally:
-
 ```
-$ make install
+$ make build      # build a local dev binary at gen/denim
+$ make install    # build and install denim to your Go bin directory (go env GOPATH/bin)
+$ make dist       # run the tests, then cross-compile all five release targets into gen/dist
 ```
 
 ## Usage
@@ -97,3 +141,20 @@ To integrate denim bash completions into your shell, add it to your `.bashrc` fi
 ```
 $ source bash_completions
 ```
+
+## Cutting a release
+
+1. Go to **Actions → Release → Run workflow** on `esumerfd/denim`.
+2. Leave the **version** field blank to release the latest tag plus one patch,
+   or type an exact `X.Y.Z` for a deliberate version jump.
+3. The workflow builds all five binaries, publishes a GitHub release with the
+   `denim_<os>_<arch>.tar.gz`/`.zip` archives and `SHA256SUMS`, rewrites
+   `Formula/denim.rb` with the new URLs and checksums, and pushes that one
+   commit to `master`. It then verifies a fresh install and an upgrade from
+   the previous release on macOS arm64/amd64 and Linux amd64/arm64.
+
+If the formula push fails after the release is already published (rare — a
+push race with another commit), the workflow's log prints the exact version,
+URLs and sha256 values so you can commit `Formula/denim.rb` by hand.
+Re-running the workflow for the same version will then correctly refuse,
+since the release already exists.
